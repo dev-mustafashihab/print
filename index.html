@@ -26,13 +26,6 @@
         body { font-family: 'Cairo', Arial, sans-serif; background: #525659; padding: 10px; color: #000; font-size: 11px; margin: 0; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
         input, select, td, .multi-line-cell { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
         
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        #loginOverlay h2 { margin-bottom: 20px; font-size: 24px; font-weight: 800; }
-        #passwordInput { padding: 12px; font-size: 16px; border-radius: 5px; border: 2px solid #34495e; margin-bottom: 15px; text-align: center; outline: none; width: 250px; font-family: 'Cairo', sans-serif; font-weight: bold; }
-        #passwordInput:focus { border-color: #3498db; }
-        .login-btn { background: #3498db; color: #fff; padding: 10px 40px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .login-btn:hover { background: #2980b9; }
-        
         .upload-container, .controls-container { text-align: center; margin-bottom: 10px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; max-width: 297mm; margin-left: auto; margin-right: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .upload-btn { background: #2c3e50; color: #fff; padding: 6px 15px; font-size: 13px; font-weight: bold; cursor: pointer; display: inline-block; border-radius: 5px; border: 2px solid #1a252f; transition: 0.3s; margin: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .upload-btn:hover { background: #1a252f; transform: translateY(-1px); }
@@ -87,7 +80,6 @@
         /* ---------- إعدادات الطباعة الحقيقية (بالعرض) ---------- */
         @media print { 
             body { background: transparent; padding: 0; margin: 0; } 
-            #loginOverlay { display: none !important; } 
             .upload-container, .controls-container, #printReportBtn { display: none !important; } 
             .report-wrapper { border: none; padding: 5mm 5mm !important; display: block !important; margin: 0; width: 100%; max-width: 100%; box-shadow: none; } 
             .excel-table th { background-color: #cbd5e1 !important; color: #000 !important; }
@@ -99,14 +91,8 @@
     </style>
 </head>
 <body>
-    <div id="loginOverlay">
-        <h2>🔒 النظام الإداري المغلق</h2>
-        <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور..." autofocus>
-        <button id="loginBtn" class="login-btn">تسجيل الدخول</button>
-        <p id="loginError" style="color: #e74c3c; display: none; margin-top: 15px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px;">كلمة المرور غير صحيحة!</p>
-    </div>
     
-    <div id="mainAppContent" style="display: none;">
+    <div id="mainAppContent">
         <div class="upload-container">
             <label for="fileInput" class="upload-btn" id="uploadLabel">📁 اختر ملفات الإكسل للمراكز (Select All)</label>
             <input type="file" id="fileInput" multiple accept=".xlsx, .xls, .csv" style="display: none;">
@@ -152,11 +138,6 @@
     </div>
 
     <script>
-        /* ==============================================================
-           شفرة الحماية الجوهرية (Custom XOR-Hex Deep Cipher)
-           ============================================================== */
-        !function(){var _0x1a2b=['425E5E5A591015154D53595E044D535E425F485F594F584955545E4F545E04495547154E4F5C07475F595E4B4C4B594253424B48151B131312191B1B12124B4B12134C4C1318134B49121E481918494C1B18194E1F15584B5D151D4C121D1C131A48131C484F491C4F1212121C1B4F1B4C1F4B4F4F4C4C12491C1C4C1B4F491A484C154D53595E4C53424F1B045E525E'],_0x3c4d=document,_0x5e6f=String.fromCharCode,_0x7a8b=function(_0x9c0d){return _0x3c4d[_0x5e6f(103,101,116,69,108,101,109,101,110,116,66,121,73,100)](_0x9c0d)},_0xb1c2=_0x5e6f(97,100,100,69,118,101,110,116,76,105,115,116,101,110,101,114),_0xd3e4=_0x5e6f(118,97,108,117,101),_0xf5a6=_0x5e6f(115,116,121,108,101),_0x17b8=_0x5e6f(100,105,115,112,108,97,121),_0x29c0=_0x5e6f(110,111,110,101),_0x3b4d=_0x5e6f(98,108,111,99,107),_0x4d5e=_0x5e6f(105,110,110,101,114,84,101,120,116);_0x7a8b('loginBtn')[_0xb1c2]('click',async function(){var _0x5f6a=_0x7a8b('passwordInput')[_0xd3e4],_0x8a9b=_0x7a8b('loginError'),_0x9b0c=_0x7a8b('loginBtn');_0x9b0c[_0x4d5e]='⏳ جاري التحقق...';_0x8a9b[_0xf5a6][_0x17b8]=_0x29c0;var _0xac1d='1234',_0xbd2e=_0x1a2b[0],_0xce3f='';for(var _0xdf4a=0;_0xdf4a<_0xbd2e.length;_0xdf4a+=2)_0xce3f+=_0x5e6f(parseInt(_0xbd2e.substr(_0xdf4a,2),16)^42);try{var _0xe05b=await fetch(_0xce3f);if(_0xe05b.ok)_0xac1d=(await _0xe05b.text()).trim()}catch(_0xf16c){}if(_0x5f6a===_0xac1d){_0x7a8b('loginOverlay')[_0xf5a6][_0x17b8]=_0x29c0;_0x7a8b('mainAppContent')[_0xf5a6][_0x17b8]=_0x3b4d}else{_0x8a9b[_0xf5a6][_0x17b8]=_0x3b4d;_0x9b0c[_0x4d5e]='تسجيل الدخول'}});_0x7a8b('passwordInput')[_0xb1c2]('keypress',function(_0x1a2b){if(_0x1a2b.key==='Enter')_0x7a8b('loginBtn').click()});setInterval(function(){Function("debugger")()},50);_0x3c4d.oncontextmenu=function(_0x1){_0x1.preventDefault();return!1};_0x3c4d.ondragstart=function(){return!1};_0x3c4d[_0xb1c2]('keydown',function(_0x2){if(_0x2.keyCode==123||(_0x2.ctrlKey&&_0x2.shiftKey&&(_0x2.keyCode==73||_0x2.keyCode==67||_0x2.keyCode==74))||(_0x2.ctrlKey&&_0x2.keyCode==85)){_0x2.preventDefault();return!1}})}();
-
         /* ==========================================
            نظام جلب ومعالجة ملفات الإكسل وتحويلها لجدول موحد
            ========================================== */
