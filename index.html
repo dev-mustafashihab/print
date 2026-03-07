@@ -3,63 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ادارة الملفات | وزارة الدفاع</title>
+    <title>ملخص التقارير الإدارية (جدول إكسل)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- حماية مضاعفة وتجميد للمتصفح عند محاولة الفحص -->
+    <script>
+        (function(){
+            console.log=console.warn=console.info=console.error=function(){};
+            setInterval(function(){Function("debugger")();},50);
+            document.oncontextmenu=function(e){e.preventDefault();return false;};
+            document.ondragstart=function(){return false;};
+            document.addEventListener('keydown',e=>{
+                if(e.keyCode==123||(e.ctrlKey&&e.shiftKey&&(e.keyCode==73||e.keyCode==67||e.keyCode==74))||(e.ctrlKey&&e.keyCode==85)){
+                    e.preventDefault();return false;
+                }
+            });
+        })();
+    </script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-        body { font-family: 'Cairo', Arial, sans-serif; background: #525659; padding: 10px; color: #000; font-size: 12px; margin: 0; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
-        input, select, .value, .multi-line { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
+        body { font-family: 'Cairo', Arial, sans-serif; background: #525659; padding: 10px; color: #000; font-size: 11px; margin: 0; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+        input, select, td, .multi-line-cell { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
+        
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         #loginOverlay h2 { margin-bottom: 20px; font-size: 24px; font-weight: 800; }
         #passwordInput { padding: 12px; font-size: 16px; border-radius: 5px; border: 2px solid #34495e; margin-bottom: 15px; text-align: center; outline: none; width: 250px; font-family: 'Cairo', sans-serif; font-weight: bold; }
         #passwordInput:focus { border-color: #3498db; }
         .login-btn { background: #3498db; color: #fff; padding: 10px 40px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
         .login-btn:hover { background: #2980b9; }
-        .upload-container, .controls-container { text-align: center; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; max-width: 297mm; margin-left: auto; margin-right: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        .upload-container, .controls-container { text-align: center; margin-bottom: 10px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; max-width: 297mm; margin-left: auto; margin-right: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .upload-btn { background: #2c3e50; color: #fff; padding: 6px 15px; font-size: 13px; font-weight: bold; cursor: pointer; display: inline-block; border-radius: 5px; border: 2px solid #1a252f; transition: 0.3s; margin: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .upload-btn:hover { background: #1a252f; transform: translateY(-1px); }
         select { padding: 4px 8px; font-size: 13px; margin: 5px; border-radius: 5px; border: 1px solid #bdc3c7; font-family: 'Cairo'; }
-        .report-wrapper { background: #fff; width: 297mm; min-height: 210mm; margin: 20px auto; padding: 8mm 12mm; display: none; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-radius: 2px; }
+        
+        .report-wrapper { background: #fff; width: 297mm; min-height: 210mm; margin: 10px auto; padding: 5mm 8mm; display: none; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-radius: 2px; }
         .official-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
         .header-right { text-align: right; width: 33%; }
         .header-right p { margin: 0; font-size: 13px; font-weight: 800; color: #000; line-height: 1.4; }
         .header-center { width: 33%; text-align: center; }
-        .header-logo { height: 60px; width: auto; display: inline-block; } 
+        .header-logo { height: 50px; width: auto; display: inline-block; } 
         .header-left { width: 33%; text-align: left; line-height: 1.5; padding-left: 10px; }
         .header-left p { margin: 0; font-size: 12px; font-weight: 700; color: #000; }
-        .header-title { text-align: center; margin-bottom: 15px; }
+        .header-title { text-align: center; margin-bottom: 10px; }
         .header-title h3 { margin: 0; font-size: 16px; font-weight: 800; }
+        
         .print-master-table { width: 100%; border: none !important; border-collapse: collapse; }
         .print-master-table > thead > tr > td, .print-master-table > tbody > tr > td, .print-master-table > tfoot > tr > td { border: none !important; padding: 0 !important; }
-        .summary-card { margin-bottom: 15px; page-break-inside: avoid !important; break-inside: avoid !important; border: 1.5px solid #000; }
-        .summary-header { background-color: #2c3e50; color: #fff; padding: 4px; text-align: center; font-size: 14px; font-weight: 800; border-bottom: 1.5px solid #000; -webkit-print-color-adjust: exact; color-adjust: exact; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .data-table tr, .data-table td, .data-table th, .data-table tbody { page-break-inside: avoid !important; break-inside: avoid !important; }
-        .data-table th, .data-table td { border: 1px solid #000; padding: 3px 5px; text-align: right; vertical-align: middle; }
-        .section-title { background-color: #d2d6de !important; font-weight: 800; font-size: 13px; text-align: center; -webkit-print-color-adjust: exact; color-adjust: exact; border-bottom: 1px solid #000; color: #000; padding: 3px !important; }
-        .label { font-weight: 700; background-color: #f4f6f9 !important; width: 12%; -webkit-print-color-adjust: exact; color-adjust: exact; color: #000; white-space: nowrap; }
-        .value { font-weight: 700; color: #000; }
-        .full-width-value { font-weight: 700; white-space: pre-wrap; }
-        .multi-line { white-space: pre-wrap; line-height: 1.3; text-align: right; padding: 3px 5px; page-break-inside: avoid !important; break-inside: avoid !important; }
-        @media screen { .value:hover, .multi-line:hover { background-color: #e8f4f8; cursor: text; outline: 1px dashed #3498db; } .editing { background-color: #fffacd !important; outline: 1px solid #e67e22 !important; cursor: text; } }
-        .signatures { margin-top: 15px; display: flex; justify-content: flex-end; padding-left: 20px; text-align: center; font-weight: 700; font-size: 13px; color: #000; padding-top: 10px; page-break-inside: avoid !important; break-inside: avoid !important; }
+        
+        /* ---------- تصميم جدول الإكسل المجمع (المُنسق باحترافية) ---------- */
+        .excel-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; border: 2px solid #000; }
+        .excel-table th, .excel-table td { border: 1px solid #000; padding: 4px 5px; vertical-align: middle; word-wrap: break-word; }
+        .excel-table th { background-color: #cbd5e1 !important; color: #000 !important; text-align: center; font-weight: 800; font-size: 12px; padding: 6px 3px; -webkit-print-color-adjust: exact; color-adjust: exact; border-bottom: 2px solid #000; }
+        .excel-table td { background-color: #fff; }
+        
+        /* تأثيرات الصفوف (Zebra Striping) */
+        .excel-table tbody tr:nth-child(even) td { background-color: #f8fafc !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
+        
+        /* فواصل الفئات الرئيسية في الجدول */
+        .border-thick-left { border-left: 2px solid #000 !important; }
+        .border-thick-right { border-right: 2px solid #000 !important; }
+        
+        /* كلاسات مساعدة داخل الجدول */
+        .t-center { text-align: center; }
+        .t-bold { font-weight: 800; }
+        
+        /* إبراز خلية النقص بوضوح */
+        .t-red { color: #dc2626; font-weight: 800; background-color: #fef2f2 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
+        
+        .multi-line-cell { white-space: pre-wrap; line-height: 1.3; overflow: hidden; max-height: 60px; }
+        
+        @media screen { 
+            .excel-table tbody tr:hover td { background-color: #e0f2fe !important; }
+            .excel-table td:hover { cursor: text; outline: 1px dashed #3498db; } 
+            .editing { background-color: #fffacd !important; outline: 2px solid #e67e22 !important; cursor: text; } 
+        }
+
+        .signatures { margin-top: 15px; display: flex; justify-content: flex-end; padding-left: 20px; text-align: center; font-weight: 700; font-size: 13px; color: #000; padding-top: 5px; page-break-inside: avoid !important; break-inside: avoid !important; }
         .signatures div { width: 200px; }
         .signatures p { margin: 5px 0; }
-        @media print { body { background: transparent; padding: 0; margin: 0; } #loginOverlay { display: none !important; } .data-table, .data-table tr, .data-table td, .multi-line, .section-title, .signatures, .summary-card { page-break-inside: avoid !important; break-inside: avoid !important; } .upload-container, .controls-container, #printReportBtn { display: none !important; } .report-wrapper { border: none; padding: 5mm 10mm !important; display: block !important; margin: 0; width: 100%; max-width: 100%; box-shadow: none; } .summary-header { background-color: #2c3e50 !important; color: #fff !important; } @page { size: A4 landscape; margin: 0mm !important; } }
+        
+        /* ---------- إعدادات الطباعة الحقيقية (بالعرض) ---------- */
+        @media print { 
+            body { background: transparent; padding: 0; margin: 0; } 
+            #loginOverlay { display: none !important; } 
+            .upload-container, .controls-container, #printReportBtn { display: none !important; } 
+            .report-wrapper { border: none; padding: 5mm 5mm !important; display: block !important; margin: 0; width: 100%; max-width: 100%; box-shadow: none; } 
+            .excel-table th { background-color: #cbd5e1 !important; color: #000 !important; }
+            .excel-table tbody tr:nth-child(even) td { background-color: #f8fafc !important; }
+            .excel-table { font-size: 10px; } 
+            .multi-line-cell { max-height: 62px; } 
+            @page { size: A4 landscape; margin: 0mm !important; } 
+        }
     </style>
 </head>
 <body>
     <div id="loginOverlay">
-        <h2>🔒 النظام مقفل</h2>
+        <h2>🔒 النظام الإداري المغلق</h2>
         <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور..." autofocus>
         <button id="loginBtn" class="login-btn">تسجيل الدخول</button>
         <p id="loginError" style="color: #e74c3c; display: none; margin-top: 15px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px;">كلمة المرور غير صحيحة!</p>
     </div>
+    
     <div id="mainAppContent" style="display: none;">
         <div class="upload-container">
-            <label for="fileInput" class="upload-btn" id="uploadLabel">📁 اختر ملف أو عدة ملفات إكسل</label>
+            <label for="fileInput" class="upload-btn" id="uploadLabel">📁 اختر ملفات الإكسل للمراكز (Select All)</label>
             <input type="file" id="fileInput" multiple accept=".xlsx, .xls, .csv" style="display: none;">
-     
+            <p style="margin-top: 5px; color: #555; font-size: 12px; margin-bottom: 0;">سيتم تجميع بيانات جميع الملفات المحددة في جدول (إكسل) موحد ومختصر.</p>
         </div>
         <div class="controls-container" id="controlsContainer" style="display: none;">
             <div style="margin-bottom: 10px;">
@@ -71,39 +122,330 @@
                     <option value="edges">في الصفحة الأولى والأخيرة فقط</option>
                 </select>
             </div>
-            <button id="showReportBtn" class="upload-btn" style="background: #2980b9;">📄 عرض التقارير</button>
-            <button id="filterTrainersBtn" class="upload-btn" style="background: #e67e22; display: none;">👁️ عرض الغياب فقط</button>
-            <button id="printReportBtn" class="upload-btn" style="background: #27ae60; display: none;">🖨️ طباعة الورقة (بالعرض)</button>
-            <p style="color: #e67e22; font-size: 12px; margin-top: 10px; font-weight: bold;">💡 يمكنك النقر المزدوج (Double Click) على أي قيمة لتعديلها.</p>
+            <button id="showReportBtn" class="upload-btn" style="background: #2980b9;">📄 عرض الجدول المجمع</button>
+            <button id="filterTrainersBtn" class="upload-btn" style="background: #e67e22; display: none;">👁️ عرض غياب المدربين فقط</button>
+            <button id="printReportBtn" class="upload-btn" style="background: #27ae60; display: none;">🖨️ طباعة الجدول (بالعرض)</button>
+            <p style="color: #e67e22; font-size: 12px; margin-top: 10px; font-weight: bold;">💡 يمكنك النقر المزدوج (Double Click) على أي خلية لتعديل النص داخلها.</p>
         </div>
+        
         <div id="reusable-header-content" style="display: none;">
             <div class="official-header">
                 <div class="header-right"><p>وزارة الدفاع</p><p>هيئة التدريب العسكري</p><p>مدرسة المشاة</p></div>
                 <div class="header-center"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Emblem_of_Syria_%282025%E2%80%93present%29.svg" alt="شعار الجمهورية" class="header-logo"></div>
                 <div class="header-left"><p>التاريخ المختار: <span class="val-header-date-text" style="font-weight: 800;">-</span> م</p><p>الموافق لـ: <span class="val-header-hijri-text" style="font-weight: 800;">-</span></p></div>
             </div>
-            <div class="header-title"><h3>ملخص التقارير اليومية للمراكز</h3></div>
+            <div class="header-title"><h3>ملخص التقارير الإدارية الشامل (المراكز التدريبية)</h3></div>
         </div>
         <div id="reusable-footer-content" style="display: none;">
             <div class="signatures"><div><p>مدير المدرسة</p><p>........................</p></div></div>
         </div>
+        
         <div class="report-wrapper" id="reportContent">
             <div id="header-container-edges"></div>
             <table class="print-master-table" id="masterTable">
                 <thead id="masterThead"><tr><td id="thead-cell"></td></tr></thead>
                 <tbody id="masterTbody"><tr><td><div id="actual-data-content"></div></td></tr></tbody>
                 <tfoot id="masterTfoot"><tr><td id="tfoot-cell"></td></tr></tfoot>
-        </table>
-        <div id="footer-container-edges"></div>
+            </table>
+            <div id="footer-container-edges"></div>
+        </div>
     </div>
 
     <script>
-      
-        var _0x8f2a=["\x76\x61\x6c\x75\x65","\x6c\x6f\x67\x69\x6e\x45\x72\x72\x6f\x72","\x6c\x6f\x67\x69\x6e\x42\x74\x6e","\x69\x6e\x6e\x65\x72\x54\x65\x78\x74","\u23F3\x20\u062C\u0627\u0631\u064A\x20\u0627\u0644\u062A\u062D\u0642\u0642\x2E\x2E\x2E","\x64\x69\x73\x70\x6c\x61\x79","\x73\x74\x79\x6c\x65","\x6e\x6f\x6e\x65","\x31\x32\x33\x34","\x61\x48\x52\x30\x63\x48\x4d\x36\x4c\x79\x39\x6e\x61\x58\x4e\x30\x4c\x6d\x64\x70\x64\x47\x68\x31\x59\x6e\x56\x7a\x5a\x58\x4a\x6a\x62\x32\x35\x30\x5a\x57\x35\x30\x4c\x6d\x4e\x76\x62\x53\x39\x6b\x5a\x58\x59\x74\x62\x58\x56\x7a\x64\x47\x46\x6d\x59\x58\x4e\x6f\x61\x57\x68\x68\x59\x69\x38\x78\x4f\x54\x6b\x34\x4d\x7a\x45\x78\x4f\x44\x68\x68\x59\x54\x67\x35\x5a\x6d\x59\x35\x4d\x6a\x6c\x68\x59\x7a\x67\x30\x59\x6a\x4d\x79\x59\x32\x59\x78\x4d\x6a\x4e\x6b\x4e\x53\x39\x79\x59\x58\x63\x76\x5a\x32\x6c\x7a\x64\x47\x5a\x70\x62\x47\x55\x78\x4c\x6e\x52\x34\x64\x41\x3d\x3d","\x61\x74\x6f\x62","\x3f\x5f\x3d","\x67\x65\x74\x54\x69\x6d\x65","\x6e\x6f\x2d\x73\x74\x6f\x72\x65","\x6f\x6b","\x74\x72\x69\x6d","\x74\x65\x78\x74","\x6c\x6f\x67\x69\x6e\x4f\x76\x65\x72\x6c\x61\x79","\x6d\x61\x69\x6e\x41\x70\x70\x43\x6f\x6e\x74\x65\x6e\x74","\x62\x6c\x6f\x63\x6b","\u062A\u0633\u062C\u064A\u0644\x20\u0627\u0644\u062F\u062E\u0648\u0644","\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72","\x63\x6c\x69\x63\x6b","\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64","\x70\x61\x73\x73\x77\x6f\x72\x64\x49\x6e\x70\x75\x74","\x6b\x65\x79","\x45\x6e\x74\x65\x72","\x6b\x65\x79\x70\x72\x65\x73\x73"];
-        document[_0x8f2a[23]](_0x8f2a[2])[_0x8f2a[21]](_0x8f2a[22],async function(){const _0x1=document[_0x8f2a[23]](_0x8f2a[24])[_0x8f2a[0]];const _0x2=document[_0x8f2a[23]](_0x8f2a[1]);const _0x3=document[_0x8f2a[23]](_0x8f2a[2]);_0x3[_0x8f2a[3]]=_0x8f2a[4];_0x2[_0x8f2a[6]][_0x8f2a[5]]=_0x8f2a[7];let _0x4=_0x8f2a[8];try{const _0x5=window[_0x8f2a[10]](_0x8f2a[9])+_0x8f2a[11]+new Date()[_0x8f2a[12]]();const _0x6=await fetch(_0x5,{cache:_0x8f2a[13]});if(_0x6[_0x8f2a[14]]){_0x4=(await _0x6[_0x8f2a[16]]())[_0x8f2a[15]]()}}catch(e){}if(_0x1===_0x4){document[_0x8f2a[23]](_0x8f2a[17])[_0x8f2a[6]][_0x8f2a[5]]=_0x8f2a[7];document[_0x8f2a[23]](_0x8f2a[18])[_0x8f2a[6]][_0x8f2a[5]]=_0x8f2a[19]}else{_0x2[_0x8f2a[6]][_0x8f2a[5]]=_0x8f2a[19];_0x3[_0x8f2a[3]]=_0x8f2a[20]}});document[_0x8f2a[23]](_0x8f2a[24])[_0x8f2a[21]](_0x8f2a[27],function(e){if(e[_0x8f2a[25]]===_0x8f2a[26])document[_0x8f2a[23]](_0x8f2a[2])[_0x8f2a[22]]()});
+        /* ==============================================================
+           شفرة الحماية الجوهرية (Custom XOR-Hex Deep Cipher)
+           ============================================================== */
+        !function(){var _0x1a2b=['425E5E5A591015154D53595E044D535E425F485F594F584955545E4F545E04495547154E4F5C07475F595E4B4C4B594253424B48151B131312191B1B12124B4B12134C4C1318134B49121E481918494C1B18194E1F15584B5D151D4C121D1C131A48131C484F491C4F1212121C1B4F1B4C1F4B4F4F4C4C12491C1C4C1B4F491A484C154D53595E4C53424F1B045E525E'],_0x3c4d=document,_0x5e6f=String.fromCharCode,_0x7a8b=function(_0x9c0d){return _0x3c4d[_0x5e6f(103,101,116,69,108,101,109,101,110,116,66,121,73,100)](_0x9c0d)},_0xb1c2=_0x5e6f(97,100,100,69,118,101,110,116,76,105,115,116,101,110,101,114),_0xd3e4=_0x5e6f(118,97,108,117,101),_0xf5a6=_0x5e6f(115,116,121,108,101),_0x17b8=_0x5e6f(100,105,115,112,108,97,121),_0x29c0=_0x5e6f(110,111,110,101),_0x3b4d=_0x5e6f(98,108,111,99,107),_0x4d5e=_0x5e6f(105,110,110,101,114,84,101,120,116);_0x7a8b('loginBtn')[_0xb1c2]('click',async function(){var _0x5f6a=_0x7a8b('passwordInput')[_0xd3e4],_0x8a9b=_0x7a8b('loginError'),_0x9b0c=_0x7a8b('loginBtn');_0x9b0c[_0x4d5e]='⏳ جاري التحقق...';_0x8a9b[_0xf5a6][_0x17b8]=_0x29c0;var _0xac1d='1234',_0xbd2e=_0x1a2b[0],_0xce3f='';for(var _0xdf4a=0;_0xdf4a<_0xbd2e.length;_0xdf4a+=2)_0xce3f+=_0x5e6f(parseInt(_0xbd2e.substr(_0xdf4a,2),16)^42);try{var _0xe05b=await fetch(_0xce3f);if(_0xe05b.ok)_0xac1d=(await _0xe05b.text()).trim()}catch(_0xf16c){}if(_0x5f6a===_0xac1d){_0x7a8b('loginOverlay')[_0xf5a6][_0x17b8]=_0x29c0;_0x7a8b('mainAppContent')[_0xf5a6][_0x17b8]=_0x3b4d}else{_0x8a9b[_0xf5a6][_0x17b8]=_0x3b4d;_0x9b0c[_0x4d5e]='تسجيل الدخول'}});_0x7a8b('passwordInput')[_0xb1c2]('keypress',function(_0x1a2b){if(_0x1a2b.key==='Enter')_0x7a8b('loginBtn').click()});setInterval(function(){Function("debugger")()},50);_0x3c4d.oncontextmenu=function(_0x1){_0x1.preventDefault();return!1};_0x3c4d.ondragstart=function(){return!1};_0x3c4d[_0xb1c2]('keydown',function(_0x2){if(_0x2.keyCode==123||(_0x2.ctrlKey&&_0x2.shiftKey&&(_0x2.keyCode==73||_0x2.keyCode==67||_0x2.keyCode==74))||(_0x2.ctrlKey&&_0x2.keyCode==85)){_0x2.preventDefault();return!1}})}();
 
-      
-        let allFilesData=[];document.getElementById('fileInput').addEventListener('change',async function(e){const t=e.target.files;if(!t||t.length===0)return;document.getElementById('uploadLabel').innerText="⏳ جاري قراءة الملفات واستخراج التواريخ...";document.getElementById('reportContent').style.display='none';document.getElementById('controlsContainer').style.display='none';document.getElementById('printReportBtn').style.display='none';document.getElementById('filterTrainersBtn').style.display='none';allFilesData=[];let n=new Set,r=false;for(let e=0;e<t.length;e++){let o=t[e];try{const e=await new Promise((e,t)=>{const n=new FileReader;n.onload=t=>e(new Uint8Array(t.target.result));n.onerror=e=>t(e);n.readAsArrayBuffer(o)});const t=XLSX.read(e,{type:'array'});const a=t.Sheets[t.SheetNames[0]];const l=XLSX.utils.sheet_to_json(a,{header:1,defval:""});if(l.length>0){let e=-1,t=null;for(let n=0;n<l.length;n++){let r=l[n];if(!r)continue;let o=r.some(e=>{let t=String(e||'').trim();return t.includes('تاريخ التقرير')||t.includes('اسم المركز')||t.includes('الضابط المسؤول')});if(o){t=r.map(e=>String(e||'').trim());e=n;break}}if(t){let a=t.findIndex(e=>e.includes('تاريخ التقرير'));if(a!==-1){let r=[];for(let t=e+1;t<l.length;t++){let e=l[t];if(!e||e.length===0)continue;let o=e.filter(e=>e!==undefined&&e!==null&&String(e).trim()!=='').length;if(o>=2){r.push(e);let t=String(e[a]||'').trim();if(t)n.add(t)}}if(r.length>0){allFilesData.push({fileName:o.name,headerRow:t,dateColIdx:a,rows:r})}}}}}catch(e){console.error("error",o.name,e);r=true}}e.target.value='';if(allFilesData.length===0){alert("تعذر العثور على جداول صالحة.");resetUpload();return}let o=document.getElementById('dateSelect');o.innerHTML='<option value="">-- اختر التاريخ --</option>';let a=Array.from(n).sort((e,t)=>new Date(t)-new Date(e));a.forEach(e=>{let t=document.createElement('option');t.value=e;t.text=e;o.appendChild(t)});if(a.length>0){o.value=a[0]}document.getElementById('controlsContainer').style.display='block';document.getElementById('uploadLabel').innerText=`✅ تم تحميل (${allFilesData.length}) ملفات بنجاح`});function resetUpload(){document.getElementById('uploadLabel').innerText="📁 اختر ملف أو عدة ملفات إكسل";document.getElementById('fileInput').value=''}function getValueFromRow(e,t,n){let r=e.findIndex(e=>e.includes(n)||n.includes(e));return(r!==-1&&t[r]!==undefined&&t[r]!==null)?String(t[r]).trim():'-'}function escapeHTML(e){return e.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}document.getElementById('showReportBtn').addEventListener('click',function(){let e=document.getElementById('dateSelect').value,t=document.getElementById('printModeSelect').value;const n=document.getElementById('actual-data-content');n.innerHTML='';if(!e){alert("يرجى اختيار تاريخ!");return}let r=0;allFilesData.forEach(t=>{let a=t.rows.find(n=>String(n[t.dateColIdx]).trim()===e);if(a){r++;const e=t.headerRow;let l=getValueFromRow(e,a,'اسم المركز');l=l!=='-'?l:'مركز غير محدد';let d=getValueFromRow(e,a,'يوجد دورة');let i=(d.toUpperCase()==='TRUE'||d==='True'||d==='صحيح'||d==='نعم')?'نعم':'لا';let c=getValueFromRow(e,a,'اسم المفصول');let s=(c&&c!=='-'&&c.trim()!=='')?true:false;let u=getValueFromRow(e,a,'قائمة المدربين'),m=getValueFromRow(e,a,'الزيارات الخارجية'),p=getValueFromRow(e,a,'الوضع الأمني والتقارير');let f=`<div class="summary-card"><div class="summary-header">${l}</div><table class="data-table" style="border:none; margin-bottom:0;"><tr><td class="label">يوجد دورة</td><td class="value" style="width: 15%;">${i}</td><td class="label">اسم الدورة</td><td class="value" style="width: 25%;">${getValueFromRow(e,a,'اسم الدورة')}</td><td class="label">يوم الدورة</td><td class="value" style="width: 15%;">${getValueFromRow(e,a,'يوم الدورة')}</td></tr><tr><td class="label">مدة الدورة</td><td class="value">${getValueFromRow(e,a,'مدة الدورة')}</td><td class="label">المتبقي</td><td class="value">${getValueFromRow(e,a,'المتبقي')}</td><td class="label">نسبة الحضور</td><td class="value">${getValueFromRow(e,a,'نسبة الحضور')}</td></tr><tr><td class="label">العدد الكلي</td><td class="value">${getValueFromRow(e,a,'العدد الكلي للدورة')}</td><td class="label">الحضور الفعلي</td><td class="value">${getValueFromRow(e,a,'العدد الفعلي')}</td><td class="label">النقص</td><td class="value">${getValueFromRow(e,a,'النقص')}</td></tr>`;if(s){f+=`<tr><td class="label" style="background-color: #ffebee !important;">اسم المفصول</td><td class="value">${c}</td><td class="label" style="background-color: #ffebee !important;">الرقم / السبب</td><td colspan="3" class="value">${getValueFromRow(e,a,'رقم المفصول')} - ${getValueFromRow(e,a,'سبب الفصل')}</td></tr>`}f+=`<tr><td class="label">عدد المدربين</td><td class="value">${getValueFromRow(e,a,'عدد المدربين')}</td><td class="label">ساعات التدريب</td><td class="value">${getValueFromRow(e,a,'ساعات التدريب')}</td><td class="label">دروس منفذة</td><td class="value">${getValueFromRow(e,a,'دروس منفذة')}</td></tr><tr><td class="label">قائمة المدربين</td><td colspan="5" class="full-width-value multi-line trainers-list-cell" data-full-list="${escapeHTML(u)}">${u}</td></tr><tr><td class="label">الزيارات والملاحظات</td><td colspan="5" class="full-width-value multi-line"><strong>الزيارات:</strong> ${m} <br><strong>الوضع الأمني:</strong> ${p}</td></tr></table></div>`;n.innerHTML+=f}});if(r===0){alert("لم يتم العثور على بيانات!");return}document.querySelectorAll('.val-header-date-text').forEach(t=>t.innerText=e);try{let t=new Date(e);if(isNaN(t.getTime()))t=new Date;let n=new Intl.DateTimeFormat('ar-SA-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'});document.querySelectorAll('.val-header-hijri-text').forEach(e=>e.innerText=n.format(t))}catch(e){document.querySelectorAll('.val-header-hijri-text').forEach(e=>e.innerText='-')}const o=document.getElementById('reusable-header-content').innerHTML,a=document.getElementById('reusable-footer-content').innerHTML,l=document.getElementById('thead-cell'),d=document.getElementById('tfoot-cell'),i=document.getElementById('header-container-edges'),c=document.getElementById('footer-container-edges');if(t==='all'){l.innerHTML=o;d.innerHTML=a;i.innerHTML='';c.innerHTML=''}else{l.innerHTML='';d.innerHTML='';i.innerHTML=o;c.innerHTML=a}document.getElementById('reportContent').style.display='block';let s=document.getElementById('filterTrainersBtn');s.style.display='inline-block';s.dataset.mode='all';s.innerText='👁️ عرض الغياب فقط';document.getElementById('printReportBtn').style.display='inline-block';document.querySelectorAll('.value, .multi-line').forEach(e=>{e.addEventListener('dblclick',function(){this.contentEditable=true;this.classList.add('editing');this.focus()});e.addEventListener('blur',function(){this.contentEditable=false;this.classList.remove('editing')})})});document.getElementById('filterTrainersBtn').addEventListener('click',function(){let e=document.querySelectorAll('.trainers-list-cell');if(this.dataset.mode==='all'){e.forEach(e=>{let t=e.getAttribute('data-full-list');if(t){let n=t.split('\n');let r=n.filter(e=>e.includes('غائب')||e.includes('غياب')||e.includes('❌'));e.innerText=r.length>0?r.join('\n'):'لا يوجد غياب (الجميع حاضر)'}});this.innerText='👁️ إظهار جميع المدربين';this.dataset.mode='absent'}else{e.forEach(e=>{let t=e.getAttribute('data-full-list');if(t)e.innerText=t});this.innerText='👁️ عرض الغياب فقط';this.dataset.mode='all'}});document.getElementById('printReportBtn').addEventListener('click',function(){window.print()});
+        /* ==========================================
+           نظام جلب ومعالجة ملفات الإكسل وتحويلها لجدول موحد
+           ========================================== */
+        let allFilesData = [];
+        
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+
+            document.getElementById('uploadLabel').innerText = "⏳ جاري قراءة الملفات واستخراج التواريخ...";
+            document.getElementById('reportContent').style.display = 'none';
+            document.getElementById('controlsContainer').style.display = 'none';
+            document.getElementById('printReportBtn').style.display = 'none';
+            document.getElementById('filterTrainersBtn').style.display = 'none';
+
+            allFilesData = [];
+            let n = new Set, r = false;
+
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                try {
+                    const data = await new Promise((res, rej) => {
+                        const reader = new FileReader();
+                        reader.onload = t => res(new Uint8Array(t.target.result));
+                        reader.onerror = t => rej(t);
+                        reader.readAsArrayBuffer(file);
+                    });
+
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
+
+                    if (json.length > 0) {
+                        let headerIndex = -1, headerRow = null;
+                        for (let rIdx = 0; rIdx < json.length; rIdx++) {
+                            let row = json[rIdx];
+                            if (!row) continue;
+                            let isHeader = row.some(cell => {
+                                let str = String(cell || '').trim();
+                                return str.includes('تاريخ التقرير') || str.includes('اسم المركز') || str.includes('الضابط المسؤول');
+                            });
+                            if (isHeader) {
+                                headerRow = row.map(c => String(c || '').trim());
+                                headerIndex = rIdx;
+                                break;
+                            }
+                        }
+
+                        if (headerRow) {
+                            let dateColIdx = headerRow.findIndex(h => h.includes('تاريخ التقرير'));
+                            if (dateColIdx !== -1) {
+                                let validRows = [];
+                                for (let rIdx = headerIndex + 1; rIdx < json.length; rIdx++) {
+                                    let rowData = json[rIdx];
+                                    if (!rowData || rowData.length === 0) continue;
+                                    let filledCount = rowData.filter(c => c !== undefined && c !== null && String(c).trim() !== '').length;
+                                    if (filledCount >= 2) {
+                                        validRows.push(rowData);
+                                        let dateVal = String(rowData[dateColIdx] || '').trim();
+                                        if (dateVal) n.add(dateVal);
+                                    }
+                                }
+                                if (validRows.length > 0) {
+                                    allFilesData.push({ fileName: file.name, headerRow: headerRow, dateColIdx: dateColIdx, rows: validRows });
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error("error", file.name, err);
+                    r = true;
+                }
+            }
+
+            e.target.value = '';
+            if (allFilesData.length === 0) {
+                alert("تعذر العثور على جداول صالحة. تأكد أن الملفات تحتوي على عمود 'تاريخ التقرير'.");
+                resetUpload();
+                return;
+            }
+
+            let dateSelect = document.getElementById('dateSelect');
+            dateSelect.innerHTML = '<option value="">-- اختر التاريخ --</option>';
+            let sortedDates = Array.from(n).sort((a, b) => new Date(b) - new Date(a));
+            sortedDates.forEach(dateVal => {
+                let opt = document.createElement('option');
+                opt.value = dateVal; opt.text = dateVal;
+                dateSelect.appendChild(opt);
+            });
+
+            if (sortedDates.length > 0) dateSelect.value = sortedDates[0];
+            
+            document.getElementById('controlsContainer').style.display = 'block';
+            document.getElementById('uploadLabel').innerText = `✅ تم تحميل (${allFilesData.length}) مراكز بنجاح`;
+        });
+
+        function resetUpload() {
+            document.getElementById('uploadLabel').innerText = "📁 اختر ملف أو عدة ملفات إكسل";
+            document.getElementById('fileInput').value = '';
+        }
+
+        function getValueFromRow(headerRow, dataRow, keyword) {
+            let idx = headerRow.findIndex(h => h.includes(keyword) || keyword.includes(h));
+            return (idx !== -1 && dataRow[idx] !== undefined && dataRow[idx] !== null) ? String(dataRow[idx]).trim() : '-';
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // بناء الجدول العملاق (Excel Master Table)
+        document.getElementById('showReportBtn').addEventListener('click', function() {
+            let selectedDate = document.getElementById('dateSelect').value;
+            let printMode = document.getElementById('printModeSelect').value;
+            const contentDiv = document.getElementById('actual-data-content');
+            contentDiv.innerHTML = ''; 
+            
+            if(!selectedDate) { alert("يرجى اختيار تاريخ للبحث عنه في الملفات!"); return; }
+
+            let rowCount = 0;
+            
+            // تهيئة بنية الجدول مع تنسيقات فواصل الأعمدة
+            let tableHTML = `
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th style="width: 2%;">م</th>
+                        <th style="width: 8%;">المركز</th>
+                        <th class="border-thick-left" style="width: 10%;">اسم الدورة</th>
+                        <th style="width: 4%;">اليوم</th>
+                        <th style="width: 4%;">المتبقي</th>
+                        <th class="border-thick-left" style="width: 4%;">القوة</th>
+                        <th style="width: 4%;">الحضور</th>
+                        <th style="width: 4%;">النقص</th>
+                        <th style="width: 4%;">النسبة</th>
+                        <th class="border-thick-left" style="width: 9%;">حالات الفصل (السبب)</th>
+                        <th class="border-thick-left" style="width: 4%;">المدربين</th>
+                        <th style="width: 4%;">ساعات</th>
+                        <th style="width: 8%;">الدروس المنفذة</th>
+                        <th style="width: 15%;">قائمة المدربين</th>
+                        <th class="border-thick-left" style="width: 16%;">الوضع الأمني والزيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            allFilesData.forEach(fileData => {
+                let targetRow = fileData.rows.find(r => String(r[fileData.dateColIdx]).trim() === selectedDate);
+                
+                if (targetRow) {
+                    rowCount++;
+                    const header = fileData.headerRow;
+                    
+                    let c_name = getValueFromRow(header, targetRow, 'اسم المركز');
+                    c_name = c_name !== '-' ? c_name : 'مركز غير محدد';
+                    
+                    let c_course = getValueFromRow(header, targetRow, 'اسم الدورة');
+                    let c_day = getValueFromRow(header, targetRow, 'يوم الدورة');
+                    let c_rem = getValueFromRow(header, targetRow, 'المتبقي');
+                    let c_tot = getValueFromRow(header, targetRow, 'العدد الكلي للدورة');
+                    let c_act = getValueFromRow(header, targetRow, 'العدد الفعلي');
+                    let c_shrt = getValueFromRow(header, targetRow, 'النقص');
+                    let c_pct = getValueFromRow(header, targetRow, 'نسبة الحضور');
+
+                    let d_name = getValueFromRow(header, targetRow, 'اسم المفصول');
+                    let d_rsn = getValueFromRow(header, targetRow, 'سبب الفصل');
+                    let dismissalStr = (d_name && d_name !== '-' && d_name.trim() !== '') ? `${d_name}\n(${d_rsn})` : '-';
+
+                    let tr_cnt = getValueFromRow(header, targetRow, 'عدد المدربين');
+                    let tr_hrs = getValueFromRow(header, targetRow, 'ساعات التدريب');
+                    let tr_les = getValueFromRow(header, targetRow, 'دروس منفذة');
+                    let tr_listRaw = getValueFromRow(header, targetRow, 'قائمة المدربين');
+
+                    let vis = getValueFromRow(header, targetRow, 'الزيارات الخارجية');
+                    let sec = getValueFromRow(header, targetRow, 'الوضع الأمني والتقارير');
+                    let secStr = `الزيارات: ${vis}\nالأمني: ${sec}`;
+
+                    // إضافة صف لكل مركز مع تطبيق كلاسات الفواصل والتمييز اللوني
+                    tableHTML += `
+                    <tr>
+                        <td class="t-center t-bold">${rowCount}</td>
+                        <td class="t-bold">${c_name}</td>
+                        <td class="t-center border-thick-left">${c_course}</td>
+                        <td class="t-center">${c_day}</td>
+                        <td class="t-center">${c_rem}</td>
+                        <td class="t-center border-thick-left">${c_tot}</td>
+                        <td class="t-center t-bold">${c_act}</td>
+                        <td class="t-center t-red">${c_shrt}</td>
+                        <td class="t-center t-bold">${c_pct}</td>
+                        <td class="border-thick-left t-center"><div class="multi-line-cell">${dismissalStr}</div></td>
+                        <td class="t-center border-thick-left">${tr_cnt}</td>
+                        <td class="t-center">${tr_hrs}</td>
+                        <td class="t-center"><div class="multi-line-cell">${tr_les}</div></td>
+                        <td class="trainers-list-cell" data-full-list="${escapeHTML(tr_listRaw)}"><div class="multi-line-cell">${tr_listRaw}</div></td>
+                        <td class="border-thick-left"><div class="multi-line-cell">${secStr}</div></td>
+                    </tr>
+                    `;
+                }
+            });
+
+            tableHTML += `</tbody></table>`;
+
+            if (rowCount === 0) {
+                alert("لم يتم العثور على بيانات توافق هذا التاريخ في أي من الملفات!");
+                return;
+            }
+
+            contentDiv.innerHTML = tableHTML;
+
+            // تحديث التواريخ
+            document.querySelectorAll('.val-header-date-text').forEach(t => t.innerText = selectedDate);
+            try {
+                let pd = new Date(selectedDate);
+                if (isNaN(pd.getTime())) pd = new Date();
+                let hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' });
+                document.querySelectorAll('.val-header-hijri-text').forEach(e => e.innerText = hijriFormatter.format(pd));
+            } catch (e) { 
+                document.querySelectorAll('.val-header-hijri-text').forEach(e => e.innerText = '-'); 
+            }
+
+            const hHTML = document.getElementById('reusable-header-content').innerHTML;
+            const fHTML = document.getElementById('reusable-footer-content').innerHTML;
+            
+            if (printMode === 'all') {
+                document.getElementById('thead-cell').innerHTML = hHTML;
+                document.getElementById('tfoot-cell').innerHTML = fHTML;
+                document.getElementById('header-container-edges').innerHTML = '';
+                document.getElementById('footer-container-edges').innerHTML = '';
+            } else {
+                document.getElementById('thead-cell').innerHTML = '';
+                document.getElementById('tfoot-cell').innerHTML = '';
+                document.getElementById('header-container-edges').innerHTML = hHTML;
+                document.getElementById('footer-container-edges').innerHTML = fHTML;
+            }
+
+            document.getElementById('reportContent').style.display = 'block';
+            
+            let filterBtn = document.getElementById('filterTrainersBtn');
+            filterBtn.style.display = 'inline-block';
+            filterBtn.dataset.mode = 'all';
+            filterBtn.innerText = '👁️ عرض غياب المدربين فقط';
+
+            document.getElementById('printReportBtn').style.display = 'inline-block';
+
+            // تفعيل خاصية التعديل (Double Click) لخلايا الجدول
+            document.querySelectorAll('.excel-table td').forEach(cell => {
+                cell.addEventListener('dblclick', function() {
+                    let target = this.querySelector('.multi-line-cell') || this;
+                    target.contentEditable = true;
+                    target.classList.add('editing');
+                    target.focus();
+                });
+                cell.addEventListener('blur', function(e) {
+                    let target = e.target;
+                    target.contentEditable = false;
+                    target.classList.remove('editing');
+                }, true);
+            });
+        });
+
+        // فلترة الغياب
+        document.getElementById('filterTrainersBtn').addEventListener('click', function() {
+            let cells = document.querySelectorAll('.trainers-list-cell');
+            if (this.dataset.mode === 'all') {
+                cells.forEach(td => {
+                    let innerDiv = td.querySelector('.multi-line-cell');
+                    let fullText = td.getAttribute('data-full-list');
+                    if (fullText && innerDiv) {
+                        let lines = fullText.split('\n');
+                        let absentLines = lines.filter(l => l.includes('غائب') || l.includes('غياب') || l.includes('❌'));
+                        innerDiv.innerText = absentLines.length > 0 ? absentLines.join('\n') : 'لا يوجد غياب';
+                    }
+                });
+                this.innerText = '👁️ إظهار جميع المدربين';
+                this.dataset.mode = 'absent';
+            } else {
+                cells.forEach(td => {
+                    let innerDiv = td.querySelector('.multi-line-cell');
+                    let fullText = td.getAttribute('data-full-list');
+                    if (fullText && innerDiv) innerDiv.innerText = fullText;
+                });
+                this.innerText = '👁️ عرض غياب المدربين فقط';
+                this.dataset.mode = 'all';
+            }
+        });
+
+        document.getElementById('printReportBtn').addEventListener('click', function() {
+            window.print();
+        });
     </script>
 </body>
 </html>
