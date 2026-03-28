@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وزارة الدفاع - مدرسة المشاة</title>
+    <!-- تضمين الخطوط ومكتبة Tailwind -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700&family=Cairo:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- مكتبة SheetJS لتصدير Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: rgb(0, 29, 19); /* الأخضر العسكري */
+            --accent-color: #d4af37; /* الذهبي */
+            --bg-light: #f4f6f4;
+            --text-color: #333;
+            --card-bg: white;
+            --border-color: #e2e8f0;
+        }
+
+        /* متغيرات وضع رمضان */
+        body.ramadan-mode {
+            --primary-color: #1a0b2e; /* بنفسجي غامق */
+            --accent-color: #ffd700; /* ذهبي لامع */
+            --bg-light: #fdfbf7; /* كريمي فاتح */
+            background-image: url('https://www.transparenttextures.com/patterns/arabesque.png');
+        }
+
+        body.ramadan-mode header {
+            background-color: rgba(26, 11, 46, 0.98);
+        }
+
+        body.ramadan-mode .section-header {
+            background: linear-gradient(to left, #2d1b4e, #432c7a);
+        }
+
+        body.ramadan-mode .nav-link:hover {
+            color: #ffd700;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        /* زخرفة الفانوس لرمضان */
+        .ramadan-lantern {
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 50px;
+            height: auto;
+            animation: swing 3s infinite ease-in-out;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .ramadan-lantern.right {
+            left: auto;
+            right: 20px;
+            animation-delay: 1s;
+        }
+
+        body.ramadan-mode .ramadan-lantern {
+            display: block;
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            padding-top: 90px;
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* --- إخفاء أسهم حقول الأرقام --- */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] { -moz-appearance: textfield; }
+
+        /* فرض الأرقام الإنجليزية في الحقول */
+        input[type=number] {
+            font-family: 'Cairo', sans-serif;
+            direction: ltr; /* يجبر المتصفح على استخدام الأرقام الإنجليزية */
+            text-align: center; /* يعيد المحاذاة للوسط ليكون الشكل مقبولاً */
+        }
+        /* استثناء لحقول التاريخ لتبقى كما هي */
+        input[type="date"] {
+            direction: rtl; 
+        }
+
+        /* --- تنسيقات الهيدر --- */
+        header {
+            background-color: rgba(0, 29, 19, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 0 4%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 3px solid var(--accent-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 1024px) {
+            header { height: 90px; padding: 0 5%; }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            flex: 1; 
+        }
+
+        .logo-area img { 
+            height: 45px;
+            width: auto;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); 
+            transition: height 0.3s ease;
+        }
+
+        @media (min-width: 768px) { .logo-area img { height: 55px; } }
+        @media (min-width: 1024px) { .logo-area img { height: 65px; } }
+
+        .separator-line {
+            width: 1px;
+            height: 35px;
+            background-color: var(--accent-color);
+            margin: 0 12px; 
+            border-radius: 4px;
+            opacity: 0;
+            flex-shrink: 0;
+            animation: slideInSeparator 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+        }
+
+        @media (min-width: 1024px) {
+            .separator-line { width: 2px; height: 55px; margin: 0 25px; }
+        }
+
+        @keyframes slideInSeparator {
+            0% { opacity: 0; transform: translateX(30px) scaleY(0.8); }
+            100% { opacity: 1; transform: translateX(0) scaleY(1); }
+        }
+
+        .official-text {
+            font-family: 'Cairo', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInText 1.2s ease-out forwards;
+            opacity: 0;
+            animation-delay: 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-link:hover { color: var(--accent-color); }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; right: 0; width: 0; height: 2px;
+            background-color: var(--accent-color); transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* تنسيقات الروابط المعلقة */
+        .nav-link-disabled {
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            position: relative;
+        }
+        .nav-link-disabled:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .nav-link-disabled::before {
+            content: 'قريباً';
+            position: absolute;
+            top: -8px;
+            left: 5px;
+            font-size: 8px;
+            background: #d4af37;
+            color: #000;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        #mobile-menu {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 29, 19, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--accent-color);
+            padding: 20px;
+            transform: translateY(-150%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+        #mobile-menu.open { transform: translateY(0); }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: white;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        /* --- تنسيقات النماذج والحقول --- */
+        .section-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            background: linear-gradient(to left, var(--primary-color), #0f3d2e);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 3px solid var(--accent-color);
+            transition: background 0.5s ease;
+        }
+
+        .input-group { position: relative; }
+
+        .input-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .custom-input, .custom-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background-color: #f8fafc;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .custom-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: left 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-left: 2.5rem;
+        }
+
+        .custom-input:focus, .custom-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .custom-input:read-only {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        .dismissal-section {
+            background-color: #fef2f2;
+            border: 2px dashed #fca5a5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .staff-row:hover { background-color: #f8fafc; }
+
+        /* تنسيق بطاقة التذكير */
+        .reminder-card {
+            background: linear-gradient(135deg, #fdfbf7 0%, #ffffff 100%);
+            border: 1px solid var(--accent-color);
+            border-right: 4px solid var(--accent-color);
+        }
+        body.ramadan-mode .reminder-card {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a0b2e 100%);
+            border: 1px solid #ffd700;
+            border-right: 4px solid #ffd700;
+            color: white;
+        }
+        body.ramadan-mode .reminder-card h3 { color: #ffd700; }
+        body.ramadan-mode .reminder-card p { color: #e2e8f0; }
+
+        /* تنسيق أزرار التحكم الجديدة */
+        .control-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background-color: #0f3d2e; /* لون أغمق قليلاً عند التحويم */
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        /* تنسيق الفوتر */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        /* Modal for Telegram Settings & Archive */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal.show { display: flex; }
+
+        /* Status Modal Styles */
+        .status-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        .status-step.active { opacity: 1; font-weight: bold; }
+        .status-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .status-step.completed .status-icon { background: #22c55e; color: white; }
+        .status-step.error .status-icon { background: #ef4444; color: white; }
+        .status-step.processing .status-icon { 
+            background: #3b82f6; 
+            color: white; 
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+
+        /* تنسيقات الطباعة */
+        @media print {
+            body { padding-top: 0; background: white; }
+            header, footer, #mobile-menu, #file-upload-section, .control-btn, .nav-link, button, .reminder-card { display: none !important; }
+            .section-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; break-inside: avoid; }
+            input, select, textarea { border: none !important; background: transparent !important; padding: 0 !important; font-weight: bold; }
+            .section-header { background: #eee !important; color: black !important; border-bottom: 2px solid #000; }
+            .section-header h2 { color: black; }
+            .section-header i { display: none; }
+            /* إجبار إظهار القيم المحددة في Select */
+            select { appearance: none; -webkit-appearance: none; }
+        }
+        
+        /* مؤشر وضع التعديل */
+        #editModeIndicator {
+            display: none;
+            background-color: #dbeafe;
+            border: 1px solid #3b82f6;
+            color: #1e40af;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #editModeIndicator.show { display: flex; }
+    </style>
+</head>
+<body>
+
+    <!-- فوانيس رمضان (مخفية افتراضياً) -->
+    <img src="https://cdn-icons-png.flaticon.com/512/4264/4264807.png" class="ramadan-lantern" alt="فانوس">
+    <img src="https://cdn-icons-png.flaticon.com/512/4264/4264807.png" class="ramadan-lantern right" alt="فانوس">
+
+    <!-- نافذة معاينة الكليشة -->
+    <div id="previewModal" class="modal">
+        <div class="bg-white p-6 rounded-xl w-11/12 max-w-2xl shadow-2xl relative my-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="eye" class="w-5 h-5 text-[var(--accent-color)]"></i> معاينة الكليشة المقترحة (للمقارنة)</h3>
+                <button onclick="document.getElementById('previewModal').classList.remove('show')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                <p class="text-sm text-gray-600 mb-2">هذا هو النص الذي يقترحه النظام بناءً على الأرقام الحالية. يمكنك نسخه يدوياً أو إغلاق النافذة للحفاظ على النص الحالي في التقرير.</p>
+                <textarea id="previewTextContent" class="w-full h-64 p-3 border rounded-lg font-mono text-sm bg-white" readonly></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('previewModal').classList.remove('show')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300">إغلاق</button>
+                <button onclick="usePreviewText()" class="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700">استخدام هذا النص</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة حالة الإرسال التفاعلية -->
+    <div id="sendingStatusModal" class="modal">
+        <div class="bg-white p-8 rounded-2xl w-11/12 max-w-md shadow-2xl relative">
+            <h3 class="text-xl font-bold text-[var(--primary-color)] mb-6 text-center border-b pb-4">جاري معالجة التقرير</h3>
+            
+            <div id="statusStepsContainer">
+                <!-- الخطوة 1 -->
+                <div class="status-step" id="step1">
+                    <div class="status-icon"><i data-lucide="file-check" class="w-5 h-5"></i></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">تجهيز البيانات</p>
+                        <p class="text-xs text-gray-500">التحقق من المدخلات والحقول</p>
+                    </div>
+                </div>
+                <!-- الخطوة 2 -->
+                <div class="status-step" id="step2">
+                    <div class="status-icon"><i data-lucide="save" class="w-5 h-5"></i></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">الحفظ والتحديث</p>
+                        <p class="text-xs text-gray-500">تحديث السجل المحلي</p>
+                    </div>
+                </div>
+                <!-- الخطوة 3 -->
+                <div class="status-step" id="step3">
+                    <div class="status-icon"><i data-lucide="send" class="w-5 h-5"></i></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">الاتصال بـ تيليجرام</p>
+                        <p class="text-xs text-gray-500">إرسال التقرير إلى التيليجرام</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statusFinalMsg" class="mt-6 text-center hidden font-bold text-lg"></div>
+            
+            <button id="closeStatusBtn" onclick="document.getElementById('sendingStatusModal').classList.remove('show')" class="mt-6 w-full py-2 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300 hidden">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة سجل الأرشيف (History) -->
+    <div id="archiveModal" class="modal">
+        <div class="bg-white p-6 rounded-xl w-11/12 max-w-4xl shadow-2xl relative my-auto h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-[var(--primary-color)]">سجل التقارير السابق</h3>
+                <button onclick="document.getElementById('archiveModal').classList.remove('show')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto bg-gray-50 rounded-lg border p-2">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-gray-200 text-gray-700 font-bold sticky top-0">
+                        <tr>
+                            <th class="p-3">التاريخ</th>
+                            <th class="p-3">اسم المركز</th>
+                            <th class="p-3">حالة الإرسال</th>
+                            <th class="p-3 text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archiveTableBody" class="divide-y divide-gray-200">
+                        <!-- سيتم تعبئة البيانات هنا عبر JS -->
+                    </tbody>
+                </table>
+                <div id="emptyArchiveMsg" class="hidden text-center py-10 text-gray-400 font-bold">لا توجد سجلات محفوظة حالياً</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الإعدادات (تيليجرام + النسخ الاحتياطي) -->
+    <div id="settingsModal" class="modal">
+        <div class="bg-white p-6 rounded-xl w-11/12 max-w-md shadow-2xl relative my-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-xl font-bold text-[var(--primary-color)]">لوحة الإعدادات والبيانات</h3>
+                <button onclick="document.getElementById('settingsModal').classList.remove('show')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <div class="space-y-6 max-h-[80vh] overflow-y-auto px-1">
+                <!-- قسم إعدادات التيليجرام -->
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <h4 class="text-sm font-bold text-gray-700 border-b pb-2 mb-3 flex items-center gap-2"><i data-lucide="send" class="w-4 h-4"></i> إعدادات الإرسال (تيليجرام)</h4>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-blue-900">التقرير الرئيسي (Token)</label>
+                            <input type="password" id="tgToken" class="custom-input text-xs" placeholder="Bot Token">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-blue-900">التقرير الرئيسي ( موحد )</label>
+                            <input type="text" id="tgChatId" class="custom-input text-xs" placeholder="Chat ID">
+                        </div>
+                        <div class="border-t border-gray-200 pt-2 mt-2">
+                            <label class="block text-xs font-bold mb-1 text-green-800">تقرير الطعام ( موحد )</label>
+                            <input type="text" id="tgChatIdFood" class="custom-input text-xs border-green-200" placeholder="Chat ID (اختياري)">
+                            <input type="password" id="tgTokenFood" class="hidden"> <!-- Hidden if same token used -->
+                        </div>
+                    </div>
+                    <button onclick="saveTelegramSettings()" class="mt-3 w-full py-2 bg-[var(--primary-color)] text-white rounded-lg font-bold text-xs hover:bg-[#0f3d2e] transition">حفظ الإعدادات</button>
+                </div>
+
+                <!-- قسم النسخ الاحتياطي (الجديد) -->
+                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                    <h4 class="text-sm font-bold text-yellow-800 border-b border-yellow-200 pb-2 mb-3 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4"></i> النسخ الاحتياطي والاستعادة</h4>
+                    
+                    <div class="flex flex-col gap-3">
+                        <button onclick="exportBackup()" class="flex items-center justify-center w-full py-2 px-4 bg-white text-yellow-700 rounded-lg border border-yellow-300 hover:bg-yellow-100 transition font-bold text-xs gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>حفظ العمل الحالي (ملف JSON)</span>
+                        </button>
+
+                        <label class="flex items-center justify-center w-full py-2 px-4 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 cursor-pointer hover:bg-blue-100 transition font-bold text-xs gap-2">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                            <span>استعادة نسخة سابقة (ملف JSON)</span>
+                            <input type="file" id="backupInput" accept=".json" class="hidden" onchange="importBackup(this)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Emblem_of_Syria_%282025%E2%80%93present%29.svg/1280px-Emblem_of_Syria_%282025%E2%80%93present%29.svg.png" alt="شعار وزارة الدفاع">
+            <div class="separator-line"></div>
+            <div class="official-text"> 
+                <h2 class="text-xs md:text-base lg:text-xl font-extrabold leading-tight text-white mb-0.5 tracking-wide">وزارة الدفاع</h2>
+                <p class="text-[9px] md:text-xs lg:text-sm font-bold text-[#d4af37] leading-none mb-0.5 tracking-wide">هيئة التدريب العسكري</p>
+                <p class="text-[8px] md:text-[10px] lg:text-xs font-semibold text-gray-300 leading-none block">مدرسة المشاة</p> 
+            </div>
+        </div>
+
+        <nav class="hidden md:flex">
+            <ul class="flex items-center gap-1 lg:gap-3">
+                <li><a href="#center-info" class="nav-link text-[#d4af37]"><i data-lucide="file-text" class="w-4 h-4"></i>التقرير اليومي</a></li>
+                <li><a href="#" class="nav-link nav-link-disabled" onclick="event.preventDefault(); alert('عذراً، التقرير الأسبوعي قيد التطوير حالياً.');"><i data-lucide="calendar-days" class="w-4 h-4"></i>التقرير الاسبوعي</a></li>
+                <li><button onclick="openArchiveModal()" class="nav-link hover:text-[#d4af37]" title="الأرشيف"><i data-lucide="history" class="w-4 h-4"></i> الأرشيف</button></li>
+                <li><button onclick="document.getElementById('settingsModal').classList.add('show')" class="p-1 rounded-full hover:bg-white/10 text-white" title="الإعدادات والنسخ الاحتياطي"><i data-lucide="settings" class="w-5 h-5"></i></button></li>
+            </ul>
+        </nav>
+
+        <button id="mobile-menu-btn" class="md:hidden text-white p-2 hover:text-[#d4af37] transition">
+            <i data-lucide="menu" class="w-7 h-7"></i>
+        </button>
+    </header>
+
+    <div id="mobile-menu">
+        <ul class="flex flex-col">
+            <li><a href="#center-info" class="mobile-nav-link text-[#d4af37]" onclick="toggleMenu()"><i data-lucide="file-text" class="w-5 h-5"></i>التقرير اليومي</a></li>
+            <li><button onclick="toggleMenu(); openArchiveModal()" class="mobile-nav-link text-white"><i data-lucide="history" class="w-5 h-5"></i> سجل التقارير (الأرشيف)</button></li>
+            <li><button onclick="toggleMenu(); document.getElementById('settingsModal').classList.add('show')" class="mobile-nav-link text-white"><i data-lucide="settings" class="w-5 h-5"></i> الإعدادات والبيانات</button></li>
+        </ul>
+    </div>
+
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- مؤشر وضع التعديل -->
+        <div id="editModeIndicator" class="animate-pulse">
+            <span>✏️ أنت الآن في وضع تعديل تقرير سابق</span>
+            <button onclick="cancelEditMode()" class="text-sm text-red-600 underline font-bold px-2">إلغاء التعديل</button>
+        </div>
+
+        <!-- نفس المحتوى السابق بدون تغيير في هيكل HTML الداخلي -->
+        <div class="text-center mb-6 mt-4 animate-fade-in-down">
+            <h1 class="text-2xl md:text-3xl font-black text-[var(--primary-color)] mb-2">التقارير اليومية لمدرسة المشاة في سوريا</h1>
+            <div class="h-1 w-24 bg-[var(--accent-color)] mx-auto rounded-full"></div>
+        </div>
+
+        <div class="reminder-card rounded-xl p-4 md:p-6 mb-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in-down">
+            <div class="flex-1 text-center md:text-right">
+                <div class="flex items-center gap-2 justify-center md:justify-start mb-2">
+                    <i data-lucide="moon" class="w-5 h-5 text-[var(--accent-color)]"></i>
+                    <h3 class="font-bold text-lg text-[var(--primary-color)] font-amiri">تذكير اليوم</h3>
+                </div>
+                <p id="islamicReminder" class="text-gray-700 font-medium font-amiri text-lg leading-relaxed"></p>
+                <p id="ramadanGreeting" class="hidden text-sm mt-2 text-[#d4af37] font-bold">✨ مبارك عليكم الشهر ✨</p>
+            </div>
+            <div class="hidden md:block w-px h-16 bg-gray-200 mx-4"></div>
+            <div class="flex flex-col items-center min-w-[150px]">
+                <span class="text-xs font-bold text-gray-500 mb-1">الطقس المتوقع</span>
+                <div class="flex items-center gap-2">
+                    <span id="weatherIconDisplay" class="text-3xl">☀️</span>
+                    <span id="weatherTextDisplay" class="font-bold text-lg">صحو</span>
+                </div>
+                <span id="currentDateDisplay" class="text-xs text-gray-400 mt-1 font-mono">--/--/----</span>
+            </div>
+        </div>
+
+        <!-- أولاً: معلومات المركز -->
+        <section id="center-info" class="section-card">
+            <div class="section-header"><i data-lucide="building-2" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">أولاً: البيانات الإدارية ومعلومات المركز</h2></div>
+            <div class="p-6 md:p-8">
+                <form id="centerInfoForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="input-group md:col-span-2"><label class="input-label">اسم المركز</label><div class="relative"><i data-lucide="landmark" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" id="centerName" class="custom-input pr-10" placeholder="أدخل اسم المركز"></div></div>
+                    <div class="input-group"><label class="input-label">تاريخ البيان</label><div class="relative"><i data-lucide="calendar" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-[#d4af37]"></i><input type="date" id="reportDate" class="custom-input pr-10 bg-yellow-50 font-bold text-center border-yellow-200" onchange="checkRamadanDate(this.value)"></div></div>
+                    <!-- نقل حالة الطقس هنا -->
+                    <div class="input-group"><label class="input-label">الطقس</label><select id="weatherStatus" class="custom-select" onchange="updateWeatherDisplay()"><option value="صحو">صحو ☀️</option><option value="غائم">غائم ☁️</option><option value="ماطر">ماطر 🌧️</option></select></div>
+                    
+                    <div class="input-group"><label class="input-label">مسؤول المركز</label><div class="relative"><i data-lucide="user-check" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" id="centerManager" class="custom-input pr-10" placeholder="الاسم الكامل" oninput="calculateFoodTotals()"></div></div>
+                    <div class="input-group"><label class="input-label">مسؤول الديوان</label><div class="relative"><i data-lucide="pen-tool" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" id="officeManager" class="custom-input pr-10" placeholder="الاسم الكامل" oninput="calculateFoodTotals()"></div></div>
+                    <div class="input-group md:col-span-2"><label class="input-label">الرقم الذاتي</label><div class="relative"><i data-lucide="badge-alert" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="number" id="managerId" class="custom-input pr-10" placeholder="الرقم الذاتي لمسؤول الديوان"></div></div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ثانياً: معلومات الدورة -->
+        <section id="course-info" class="section-card">
+            <div class="section-header"><i data-lucide="target" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">ثانياً: معلومات الدورة</h2></div>
+            <div class="p-6 md:p-8">
+                <div class="flex items-center gap-4 mb-6 border-b border-gray-100 pb-4 bg-gray-50 p-4 rounded-xl">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="hasCourseToggle" class="sr-only peer" checked onchange="toggleCourseSection()">
+                        <!-- تصميم الزر المحدث -->
+                        <div class="w-12 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[var(--accent-color)] shadow-inner"></div>
+                    </label>
+                    <div>
+                        <span class="block text-sm font-bold text-gray-800">حالة الدورة</span>
+                        <span class="text-xs text-gray-500" id="courseStatusText">يوجد دورة منعقدة حالياً</span>
+                    </div>
+                </div>
+                <div id="courseFieldsWrapper">
+                    <form id="courseInfoForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="input-group md:col-span-2"><label class="input-label">اسم الدورة</label><input type="text" id="courseName" class="custom-input" placeholder="مثال: دورة انتساب"></div>
+                            <div class="input-group md:col-span-2"><label class="input-label">الدرس اليومي</label><input type="text" id="dailyLesson" class="custom-input" placeholder="الدرس المعطى لليوم"></div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="input-group"><label class="input-label">اليوم الحالي</label><input type="number" id="currentDay" class="custom-input text-center font-bold" oninput="calculateDays()"></div>
+                            <div class="input-group"><label class="input-label">مدة الدورة</label><input type="number" id="courseDuration" class="custom-input text-center font-bold" oninput="calculateDays()"></div>
+                            <div class="input-group"><label class="input-label text-red-700">المتبقي</label><input type="number" id="remainingDays" class="custom-input text-center font-black text-red-700 bg-red-50 border-red-200" readonly></div>
+                            <!-- تم نقل الطقس للأعلى -->
+                        </div>
+                        <hr class="border-gray-200">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                            <div class="grid grid-cols-2 gap-4 md:col-span-2">
+                                <div class="input-group"><label class="input-label">العدد الكلي</label><input type="number" id="totalCount" class="custom-input font-bold" oninput="calculateStats()"></div>
+                                <div class="input-group"><label class="input-label text-green-700">العدد الفعلي</label><input type="number" id="actualCount" class="custom-input font-bold text-green-700 bg-green-50" oninput="calculateStats(); calculateFoodTotals();"></div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 flex justify-between items-center shadow-inner">
+                                <div class="text-center"><span class="block text-xs font-bold text-gray-500 mb-1">النسبة</span><span id="attendancePercent" class="text-xl font-black text-blue-900">0%</span></div>
+                                <div class="h-8 w-[1px] bg-gray-300"></div>
+                                <div class="text-center"><span class="block text-xs font-bold text-red-500 mb-1">النقص</span><span id="shortageCount" class="text-xl font-black text-red-600">0</span></div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center gap-3 mb-2">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="hasDismissalToggle" class="sr-only peer" onchange="toggleDismissalSection()">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-700"></div>
+                                </label>
+                                <span class="text-sm font-bold text-gray-700">هل يوجد حالات فصل اليوم؟</span>
+                            </div>
+
+                            <div id="dismissalContainer" class="dismissal-section hidden">
+                                <div class="flex items-center gap-2 mb-4 text-red-800 border-b border-red-200 pb-2">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                    <h3 class="font-bold text-sm">بيانات الأخ المفصول</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="input-group">
+                                        <label class="input-label text-red-900">الاسم الكامل</label>
+                                        <input type="text" id="dismissedName" class="custom-input border-red-200 focus:border-red-500" placeholder="اسم العنصر">
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="input-label text-red-900">الرقم (الذاتي/الشعبة/الإستمارة)</label>
+                                        <input type="text" id="dismissedID" class="custom-input border-red-200 focus:border-red-500" placeholder="رقم المعرف">
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="input-label text-red-900">سبب الفصل</label>
+                                        <select id="dismissalReason" class="custom-select border-red-200 focus:border-red-500 text-red-900 font-bold" onchange="toggleOtherReason()">
+                                            <option value="">-- اختر السبب --</option>
+                                            <option value="كفر">كفر</option>
+                                            <option value="شتم وإساءة">شتم وإساءة</option>
+                                            <option value="استخدام هاتف محمول">استخدام هاتف محمول</option>
+                                            <option value="هروب من الخدمة">هروب من الخدمة</option>
+                                            <option value="حالة مرضية">حالة مرضية</option>
+                                            <option value="مشاجرة">مشاجرة</option>
+                                            <option value="other">شيء آخر...</option>
+                                        </select>
+                                        <input type="text" id="otherReasonInput" class="custom-input mt-2 border-red-200 focus:border-red-500 text-red-900 hidden" placeholder="حدد سبب الفصل الآخر...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="noCourseMsg" class="hidden text-center py-8 text-gray-400 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200"><p class="font-bold">لا يوجد دورة منعقدة حالياً</p></div>
+            </div>
+        </section>
+
+        <!-- ثالثاً: كوادر المركز -->
+        <section id="staff-info" class="section-card">
+            <div class="section-header"><i data-lucide="users" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">ثالثاً: كوادر المركز</h2></div>
+            <div class="p-6 md:p-8">
+                <div id="staffContainer" class="space-y-4"></div>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button type="button" onclick="addStaffRow()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] hover:bg-yellow-50 transition-all duration-300 group"><i data-lucide="user-plus" class="w-5 h-5 ml-2 group-hover:scale-110 transition-transform"></i> إضافة كادر إداري جديد</button>
+                    <button type="button" onclick="toggleStaffPaste()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-xl text-indigo-600 font-bold hover:bg-indigo-100 transition-all duration-300 gap-2"><i data-lucide="clipboard-paste" class="w-5 h-5"></i> لصق قائمة (سريع)</button>
+                </div>
+                
+                <div id="staffPasteSection" class="hidden mt-4 bg-gray-50 p-4 rounded-xl border border-gray-200 animate-fade-in-down">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">الصق القائمة هنا (كل سطر: "الاسم","الصفة")</label>
+                    <textarea id="staffPasteText" class="custom-input h-32 font-mono text-sm resize-none" placeholder='مثال:\n"أحمد محمد","سائق"\n"خالد علي","حارس"\n"سعيد","طباخ"'></textarea>
+                    <div class="flex justify-end gap-2 mt-3">
+                        <button type="button" onclick="processStaffPaste()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> معالجة وإضافة</button>
+                        <button type="button" onclick="toggleStaffPaste()" class="text-gray-500 font-bold hover:text-gray-700 px-3 py-2">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- رابعاً: كادر المدربين -->
+        <section id="trainers-section" class="section-card">
+            <div class="section-header justify-between">
+                <div class="flex items-center gap-2"><i data-lucide="graduation-cap" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">رابعاً: كادر المدربين</h2></div>
+                <div class="bg-black/20 px-3 py-1 rounded-lg text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[#d4af37]"></i> العدد: <span id="totalTrainers" class="font-bold text-[#d4af37]">0</span></div>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                     <div class="input-group"><label class="input-label">عدد الدروس</label><div class="relative"><i data-lucide="book-open" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="number" id="lessonsCount" class="custom-input pr-9" placeholder="0"></div></div>
+                     <div class="input-group"><label class="input-label">ساعات التدريب</label><div class="relative"><i data-lucide="clock" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="number" id="trainingHours" class="custom-input pr-9" placeholder="0"></div></div>
+                </div>
+                <div id="trainersContainer" class="space-y-4"></div>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button type="button" onclick="addTrainerRow()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] hover:bg-yellow-50 transition-all duration-300 group"><i data-lucide="user-plus" class="w-5 h-5 ml-2 group-hover:scale-110 transition-transform"></i> إضافة مدرب</button>
+                    <button type="button" onclick="toggleTrainerPaste()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-xl text-indigo-600 font-bold hover:bg-indigo-100 transition-all duration-300 gap-2"><i data-lucide="clipboard-paste" class="w-5 h-5"></i> لصق قائمة (سريع)</button>
+                </div>
+
+                <div id="trainerPasteSection" class="hidden mt-4 bg-gray-50 p-4 rounded-xl border border-gray-200 animate-fade-in-down">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">الصق قائمة المدربين (كل سطر: "الاسم","الصفة")</label>
+                    <textarea id="trainerPasteText" class="custom-input h-32 font-mono text-sm resize-none" placeholder='مثال:\n"محمد علي","مدرب مشاة"\n"عمر خالد","مساعد مدرب"'></textarea>
+                    <div class="flex justify-end gap-2 mt-3">
+                        <button type="button" onclick="processTrainerPaste()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> معالجة وإضافة</button>
+                        <button type="button" onclick="toggleTrainerPaste()" class="text-gray-500 font-bold hover:text-gray-700 px-3 py-2">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- خامساً: الكادر الطبي -->
+        <section id="medical-legal-section" class="section-card">
+            <div class="section-header justify-between">
+                <div class="flex items-center gap-2"><i data-lucide="heart-pulse" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">خامساً: الكادر الطبي والشرعي</h2></div>
+                <div class="bg-black/20 px-3 py-1 rounded-lg text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[#d4af37]"></i> العدد: <span id="totalMedicalLegal" class="font-bold text-[#d4af37]">0</span></div>
+            </div>
+            <div class="p-6 md:p-8">
+                <div id="medicalLegalContainer" class="space-y-4"></div>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button type="button" onclick="addMedicalLegalRow()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] hover:bg-yellow-50 transition-all duration-300 group"><i data-lucide="user-plus" class="w-5 h-5 ml-2 group-hover:scale-110 transition-transform"></i> إضافة كادر طبي</button>
+                    <button type="button" onclick="toggleMedicalPaste()" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-xl text-indigo-600 font-bold hover:bg-indigo-100 transition-all duration-300 gap-2"><i data-lucide="clipboard-paste" class="w-5 h-5"></i> لصق قائمة (سريع)</button>
+                </div>
+
+                <div id="medicalPasteSection" class="hidden mt-4 bg-gray-50 p-4 rounded-xl border border-gray-200 animate-fade-in-down">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">الصق القائمة هنا (كل سطر: "الاسم","الصفة")</label>
+                    <textarea id="medicalPasteText" class="custom-input h-32 font-mono text-sm resize-none" placeholder='مثال:\n"د. سامر","طبيب عام"\n"الشيخ أحمد","شرعي"'></textarea>
+                    <div class="flex justify-end gap-2 mt-3">
+                        <button type="button" onclick="processMedicalPaste()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> معالجة وإضافة</button>
+                        <button type="button" onclick="toggleMedicalPaste()" class="text-gray-500 font-bold hover:text-gray-700 px-3 py-2">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- سادساً: الحرس -->
+        <section id="guards-section" class="section-card">
+            <div class="section-header"><i data-lucide="shield-check" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">سادساً: تفقد الحرس</h2></div>
+            <div class="p-6 md:p-8">
+                <form id="guardsForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="input-group md:col-span-4"><label class="input-label">مسؤول الحرس</label><div class="relative"><i data-lucide="user-check" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" id="guardResponsible" class="custom-input pr-9" placeholder="الاسم الكامل" oninput="calculateFoodTotals()"></div></div>
+                    <div class="input-group"><label class="input-label">العدد الكلي</label><input type="number" id="guardTotal" class="custom-input font-bold" placeholder="0" oninput="calculateGuardStats()"></div>
+                    <div class="input-group"><label class="input-label text-green-700">عدد الحضور</label><input type="number" id="guardPresent" class="custom-input font-bold text-green-700 bg-green-50" placeholder="0" oninput="calculateGuardStats(); calculateFoodTotals();"></div>
+                     <div class="input-group"><label class="input-label text-red-700">النقص</label><input type="number" id="guardAbsent" class="custom-input font-bold text-red-700 bg-red-50" readonly placeholder="0"></div>
+                     <div class="input-group"><label class="input-label">الجاهزية</label><div id="guardPercent" class="flex items-center justify-center h-[46px] font-black text-xl text-blue-900 bg-blue-50 rounded-lg border border-blue-100">0%</div></div>
+                    <div class="md:col-span-4 mt-2">
+                        <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2"><i data-lucide="user-x" class="w-5 h-5 text-red-600"></i> قائمة المتخلفين (الغياب)</h3>
+                        <div id="absentGuardsContainer" class="space-y-3"></div>
+                        <button type="button" onclick="addAbsentGuardRow()" class="mt-4 w-full py-3 border-2 border-dashed border-red-200 bg-red-50 text-red-700 rounded-xl font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"><i data-lucide="plus" class="w-5 h-5"></i> إضافة اسم غائب</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- سابعاً: الزيارات -->
+        <section id="visits-section" class="section-card">
+            <div class="section-header justify-between"><div class="flex items-center gap-2"><i data-lucide="briefcase" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">سابعاً: الزيارات الخارجية</h2></div></div>
+            <div class="p-6 md:p-8">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead><tr class="bg-gray-100 text-gray-700 text-xs md:text-sm uppercase tracking-wider"><th class="p-3 border-b-2">الاسم</th><th class="p-3 border-b-2">الصفة</th><th class="p-3 border-b-2">التنسيق</th><th class="p-3 border-b-2">المدة</th><th class="p-3 border-b-2">ملاحظات</th><th class="p-3 border-b-2 text-center">إجراء</th></tr></thead>
+                        <tbody id="visitsContainer"></tbody>
+                    </table>
+                </div>
+                <button type="button" onclick="addVisitRow()" class="mt-4 flex items-center justify-center w-full py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl text-gray-500 font-bold hover:border-[var(--accent-color)] hover:text-[var(--accent-color)] hover:bg-yellow-50 transition-all duration-300"><i data-lucide="plus-circle" class="w-5 h-5 ml-2"></i> إضافة زائر جديد</button>
+            </div>
+        </section>
+
+        <!-- ثامناً: الإطعام -->
+        <section id="food-section" class="section-card border-green-600 border-2">
+            <div class="section-header bg-gradient-to-l from-green-900 to-green-700"><i data-lucide="utensils" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">ثامناً: جدول الطعام</h2></div>
+            <div class="p-6 md:p-8 bg-green-50/30">
+                <!-- قسم بيانات الاستلام الجديد -->
+                <div class="bg-white p-4 rounded-xl border border-green-200 shadow-sm mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2"><i data-lucide="truck" class="w-5 h-5 text-green-700"></i> بيانات استلام الطعام</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="input-group">
+                            <label class="input-label">وقت الاستلام</label>
+                            <select id="foodReceiptTime" class="custom-select text-center font-bold">
+                                <option value="">-- اختر الوقت --</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">اسم المستلم</label>
+                            <input type="text" id="foodReceiverName" class="custom-input" placeholder="الاسم الكامل">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label text-red-700">التأخير</label>
+                            <input type="text" id="foodReceiptDelay" class="custom-input border-red-200 focus:border-red-500" placeholder="مدة التأخير (إن وجد)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2"><i data-lucide="calculator" class="w-5 h-5 text-green-700"></i> حساب الأعداد</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center"><span class="block text-xs text-gray-500 mb-1">قيادة</span><span id="foodCount_Command" class="font-bold text-lg">0</span></div>
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center"><span class="block text-xs text-gray-500 mb-1">إداري</span><span id="foodCount_Staff" class="font-bold text-lg">0</span></div>
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center"><span class="block text-xs text-gray-500 mb-1">مدربين</span><span id="foodCount_Trainers" class="font-bold text-lg">0</span></div>
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center"><span class="block text-xs text-gray-500 mb-1">طبي</span><span id="foodCount_Med" class="font-bold text-lg">0</span></div>
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center"><span class="block text-xs text-gray-500 mb-1">حرس</span><span id="foodCount_GuardTotal" class="font-bold text-lg">0</span></div>
+                        <div class="bg-white p-3 rounded-lg border shadow-sm text-center border-green-300 bg-green-50">
+                            <span class="block text-xs text-gray-500 mb-1">دورة (العدد)</span>
+                            <span id="foodCount_Course" class="font-bold text-lg text-green-800">0</span>
+                        </div>
+                        <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 col-span-2 md:col-span-2 lg:col-span-2 flex items-center gap-2">
+                            <div class="flex-1"><label class="text-[10px] font-bold text-yellow-800 block mb-1">ورشة</label><input type="number" id="workshopCount" class="w-full text-center font-bold h-8 border rounded" value="0" min="0" oninput="calculateFoodTotals()"></div>
+                            <div class="h-8 w-[1px] bg-yellow-300"></div>
+                            <div class="flex-1"><label class="text-[10px] font-bold text-yellow-800 block mb-1">ضيوف</label><input type="number" id="guestCount" class="w-full text-center font-bold h-8 border rounded" value="0" min="0" oninput="calculateFoodTotals()"></div>
+                        </div>
+                        <div class="bg-green-700 text-white p-2 rounded-lg shadow-md col-span-2 md:col-span-4 lg:col-span-4 flex items-center justify-between px-6"><span class="text-sm font-medium">الكلي:</span><span id="totalFoodRequest" class="text-2xl font-black text-[#d4af37]">0</span></div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2"><i data-lucide="shopping-bag" class="w-5 h-5 text-green-700"></i> المواد الأساسية</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><div class="flex items-center gap-2 mb-3 text-orange-800"><i data-lucide="wheat" class="w-5 h-5"></i><span class="font-bold">خبز</span></div><input type="text" id="breadCount" class="custom-input text-center" placeholder="الكمية (مثلاً: 50 ربطة)"></div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><div class="flex items-center gap-2 mb-3 text-blue-600"><i data-lucide="droplets" class="w-5 h-5"></i><span class="font-bold">مياه</span></div><input type="text" id="waterCount" class="custom-input text-center" placeholder="الكمية (مثلاً: 10 صناديق)"></div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><div class="flex items-center gap-2 mb-3 text-red-800"><i data-lucide="coffee" class="w-5 h-5"></i><span class="font-bold">شاي</span></div><input type="text" id="teaCount" class="custom-input text-center" placeholder="الكمية (مثلاً: 2 كغ)"></div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><div class="flex items-center gap-2 mb-3 text-gray-600"><i data-lucide="cookie" class="w-5 h-5"></i><span class="font-bold">سكر</span></div><input type="text" id="sugarCount" class="custom-input text-center" placeholder="الكمية (مثلاً: 5 كغ)"></div>
+                    </div>
+                </div>
+                <!-- حقل ملاحظات الطعام الجديد وزر التوليد -->
+                <div class="mt-6 pt-4 border-t border-green-200">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-3 bg-white p-3 rounded-lg border border-green-200 shadow-sm">
+                        <!-- خيار تفعيل/تعطيل الإرسال -->
+                        <label class="relative inline-flex items-center cursor-pointer p-2 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition">
+                            <input type="checkbox" id="sendFoodReportToggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                            <span class="mr-3 text-sm font-bold text-gray-700 select-none">تفعيل إرسال تقرير الطعام تلقائياً</span>
+                        </label>
+            
+                        <div class="flex gap-2">
+                            <!-- زر المعاينة (للمقارنة) -->
+                            <button type="button" onclick="previewFoodTemplate()" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-200 border border-yellow-200 flex items-center gap-1">
+                                <i data-lucide="eye" class="w-4 h-4"></i> معاينة الكليشة المقترحة
+                            </button>
+                            <!-- زر الاستبدال -->
+                            <button type="button" onclick="generateFoodTemplate()" class="text-xs bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-bold hover:bg-blue-200 border border-blue-200 flex items-center gap-1">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i> استبدال بالنص المقترح
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <label class="input-label flex items-center gap-2 mb-2"><i data-lucide="message-square" class="w-4 h-4 text-green-700"></i> ملاحظات الإطعام (نص الرسالة الثانية)</label>
+                    <textarea id="foodNotes" class="custom-input h-48 resize-none font-mono text-sm" placeholder="اكتب هنا أو اضغط على زر التوليد لجلب البيانات تلقائياً..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- تاسعاً: الوضع الأمني والتقارير (قسم جديد) -->
+        <section id="security-section" class="section-card border-red-200 border-2">
+            <div class="section-header bg-gradient-to-l from-red-900 to-red-700"><i data-lucide="shield-alert" class="w-6 h-6 text-[#d4af37]"></i><h2 class="text-lg font-bold">تاسعاً: الوضع الأمني والتقارير والطلبات</h2></div>
+            <div class="p-6 md:p-8 bg-red-50/20">
+                <textarea id="securityReport" class="custom-input h-40 resize-none" placeholder="اكتب هنا ملخص الوضع الأمني، أي أحداث طارئة، أو طلبات إدارية ولوجستية..."></textarea>
+            </div>
+        </section>
+
+        <!-- عاشراً: قسم استيراد البيانات (Excel فقط) -->
+        <section id="file-upload-section" class="section-card">
+            <div class="section-header">
+                <i data-lucide="sheet" class="w-6 h-6 text-[#d4af37]"></i>
+                <h2 class="text-lg font-bold">عاشراً: رفع ملف Excel</h2>
+            </div>
+            <div class="p-6 md:p-8">
+                <!-- قسم رفع الملف وإرساله -->
+                <div class="flex flex-col items-center gap-6">
+                    <h3 class="font-bold text-sm text-gray-500 w-full text-right">رفع ملف (للإرسال أو الاستيراد):</h3>
+                    <div class="w-full">
+                        <label for="fileInput" class="flex items-center justify-center w-full h-16 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors gap-3">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 text-green-600"></i>
+                            <p class="text-sm text-gray-600"><span class="font-semibold">اضغط لاختيار ملف إكسل (.xlsx)</span></p>
+                            <input id="fileInput" type="file" accept=".xlsx, .xls" class="hidden" onchange="updateFileName()" />
+                        </label>
+                    </div>
+                    
+                    <div id="fileNameDisplay" class="hidden w-full bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center justify-between">
+                        <span id="fileNameText" class="truncate text-sm font-bold"></span>
+                        <button onclick="clearFile()" class="text-red-500 hover:text-red-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <!-- زر الإرسال الجديد -->
+                        <button onclick="sendExcelFile()" class="flex items-center justify-center w-full py-3 bg-[#0088cc] hover:bg-[#0077b5] text-white rounded-xl font-bold transition-all shadow-md gap-2">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                            إرسال الملف إلى تيليجرام
+                        </button>
+                        
+                        <!-- زر الاستيراد القديم -->
+                        <button onclick="/* وظيفة الاستيراد هنا إذا وجدت */ alert('هذه الميزة تعتمد على محتوى الملف وقد تتطلب برمجة خاصة لقراءة البيانات')" class="flex items-center justify-center w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-all gap-2 border border-gray-300">
+                            <i data-lucide="file-input" class="w-5 h-5"></i>
+                            استيراد البيانات للنموذج (تعبئة تلقائية)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- لوحة التحكم والعمليات -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <button onclick="submitReport()" class="control-btn hover:bg-[#0f3d2e]">
+                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                ارسال وتحديث التقرير
+            </button>
+
+            <!-- زر الطباعة -->
+            <button onclick="window.print()" class="control-btn bg-gray-600 border-gray-400 hover:bg-gray-700 text-white">
+                <i data-lucide="printer" class="w-6 h-6"></i>
+                طباعة التقرير (PDF)
+            </button>
+
+            <button onclick="downloadExcel()" class="control-btn hover:bg-[#0f3d2e]">
+                <i data-lucide="download" class="w-6 h-6"></i>
+                تنزيل نسخة (للحفظ)
+            </button>
+
+            <button onclick="confirmReset()" class="control-btn hover:bg-[#0f3d2e] border-red-500 text-red-100 bg-red-900">
+                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                حذف جميع البيانات
+            </button>
+        </div>
+
+    </main>
+
+    <!-- الفوتر الجديد -->
+    <footer class="text-center">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-right border-b border-[#d4af37] pb-8">
+                <!-- العمود الأول (يمين): وزارة الدفاع -->
+                <div class="text-right">
+                    <h4 class="font-bold text-lg mb-4 text-[#d4af37]">وزارة الدفاع</h4>
+                    <p class="text-sm opacity-80">هيئة التدريب العسكري</p>
+                    <p class="text-sm opacity-80">مدرسة المشاة</p>
+                </div>
+
+                <!-- العمود الثاني (وسط): الإحصائيات -->
+                <div class="text-center">
+                    <h4 class="font-bold text-lg mb-4 text-[#d4af37]">إحصائيات النظام</h4>
+                    <div class="bg-white/10 p-4 rounded-lg inline-block w-full">
+                        <div class="flex justify-around items-center">
+                            <div class="text-center">
+                                <span class="block text-2xl font-black text-green-400 mb-1" id="statSent">0</span>
+                                <span class="text-xs opacity-75">تم الإرسال</span>
+                            </div>
+                            <div class="h-8 w-px bg-white/20"></div>
+                            <div class="text-center">
+                                <span class="block text-2xl font-black text-yellow-400 mb-1" id="statSaved">0</span>
+                                <span class="text-xs opacity-75">محفوظ محلياً</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العمود الثالث (يسار): عن المنظومة -->
+                <div class="text-left">
+                    <h4 class="font-bold text-lg mb-4 text-[#d4af37]">عن المنظومة</h4>
+                    <p class="text-sm opacity-80 leading-relaxed text-right md:text-left">
+                        منظومة التقارير اليومية الموحدة لمدرسة المشاة، تهدف لتبسيط الإجراءات الإدارية وتوحيد البيانات في منصة رقمية واحدة آمنة وسريعة.
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs opacity-60">
+                <p>جميع الحقوق محفوظة © <span id="currentYear"></span> وزارة الدفاع - الجمهورية العربية السورية</p>
+                <p>نظام إدارة التقارير الإصدار v2</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // متغير عالمي لتتبع حالة التعديل
+        let currentEditingIndex = -1;
+
+        // --- دالة تعبئة وقت الاستلام ---
+        function populateTimeSelect() {
+            const select = document.getElementById('foodReceiptTime');
+            // تفريغ القائمة أولاً ما عدا الخيار الافتراضي
+            select.innerHTML = '<option value="">-- اختر الوقت --</option>';
+            
+            const times = [];
+            // إضافة أوقات الصباح (AM)
+            times.push("12:00 ص"); // منتصف الليل
+            for(let i=1; i<=11; i++) times.push(`${i < 10 ? '0'+i : i}:00 ص`);
+            
+            // إضافة أوقات المساء (PM)
+            times.push("12:00 م"); // الظهر
+            for(let i=1; i<=11; i++) times.push(`${i < 10 ? '0'+i : i}:00 م`);
+            
+            times.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                select.appendChild(opt);
+            });
+        }
+
+        // --- إدارة الإعدادات ---
+        function saveTelegramSettings() {
+            // الإعدادات الرئيسية
+            const token = document.getElementById('tgToken').value;
+            const chatId = document.getElementById('tgChatId').value;
+            
+            // إعدادات تقرير الطعام
+            const tokenFood = document.getElementById('tgTokenFood').value;
+            const chatIdFood = document.getElementById('tgChatIdFood').value;
+
+            if(token && chatId) {
+                localStorage.setItem('tg_token', token);
+                localStorage.setItem('tg_chat_id', chatId);
+                
+                // حفظ إعدادات الطعام
+                if (chatIdFood) {
+                    localStorage.setItem('tg_chat_id_food', chatIdFood);
+                    // إذا لم يتم إدخال توكن خاص للطعام، استخدم التوكن الرئيسي
+                    localStorage.setItem('tg_token_food', tokenFood || token);
+                }
+
+                alert('تم حفظ إعدادات التيليجرام بنجاح');
+            } else {
+                alert('يرجى ملء حقول التقرير الرئيسي على الأقل');
+            }
+        }
+
+        // استرجاع الإعدادات عند التحميل وتحديث الإحصائيات
+        window.addEventListener('load', () => {
+            if(localStorage.getItem('tg_token')) document.getElementById('tgToken').value = localStorage.getItem('tg_token');
+            if(localStorage.getItem('tg_chat_id')) document.getElementById('tgChatId').value = localStorage.getItem('tg_chat_id');
+            
+            if(localStorage.getItem('tg_token_food') && localStorage.getItem('tg_token_food') !== localStorage.getItem('tg_token')) {
+                document.getElementById('tgTokenFood').value = localStorage.getItem('tg_token_food');
+            }
+            if(localStorage.getItem('tg_chat_id_food')) document.getElementById('tgChatIdFood').value = localStorage.getItem('tg_chat_id_food');
+            
+            updateFooterStats();
+        });
+
+        // دالة تحديث الإحصائيات في الفوتر
+        function updateFooterStats() {
+            const history = JSON.parse(localStorage.getItem('reportHistory')) || [];
+            let sentCount = 0;
+            let unsentCount = 0;
+
+            history.forEach(report => {
+                if (report.sentToTelegram === true) {
+                    sentCount++;
+                } else {
+                    unsentCount++;
+                }
+            });
+
+            document.getElementById('statSent').textContent = sentCount;
+            document.getElementById('statSaved').textContent = unsentCount;
+        }
+
+        // --- دالة مساعدة لتوليد نص الكليشة (دون وضعها في الحقل) ---
+        function getFoodTemplateText() {
+            const val = (id) => document.getElementById(id).value || '';
+            const txt = (id) => document.getElementById(id).innerText || '0';
+            
+            const center = val('centerName');
+            const hasCourse = document.getElementById('hasCourseToggle').checked;
+            const course = hasCourse ? val('courseName') : "لا يوجد";
+            const trainees = hasCourse ? val('actualCount') : '0';
+            const staffSum = 
+                (parseInt(txt('foodCount_Command')) || 0) + 
+                (parseInt(txt('foodCount_Staff')) || 0) + 
+                (parseInt(txt('foodCount_Trainers')) || 0) + 
+                (parseInt(txt('foodCount_Med')) || 0);
+            const guard = val('guardPresent');
+            const workshop = val('workshopCount');
+            const guests = val('guestCount');
+            const totalFood = txt('totalFoodRequest');
+            
+            const bread = val('breadCount');
+            const water = val('waterCount');
+            const tea = val('teaCount');
+            const sugar = val('sugarCount');
+            
+            // بيانات الاستلام
+            const receiptTime = val('foodReceiptTime');
+            const receiver = val('foodReceiverName');
+            const delay = val('foodReceiptDelay');
+
+           let tpl =`السلام عليكم ورحمة الله وبركاته.\n\n`;
+            tpl +=`🛑ملاحظات: \n\n`;
+            tpl +=` ■اسم المركز: ${center}\n\n `;
+            tpl +=`■نوع الدورة: ${course}\n\n `;
+            tpl +=`■عدد المتدربين الفعلي: ${trainees}\n\n`;
+            tpl +=`■عدد الكادر الفعلي: ${staffSum}\n\n `;
+            tpl +=`■عدد الحراس الفعلي: ${guard}\n\n`;
+            tpl +=`■أعداد متواجدة أخرى في المعسكر: \n\n\n`;
+            tpl +=`ورشة: ${workshop}\n`;
+            tpl +=`ضيوف: ${guests}\n\n`;
+            tpl +=`\n`;
+      tpl +=`■الرقم الإضافي للإطعام الذي يحتاجه المعسكر: \n\n`;
+            tpl +=`● مجموع أعداد المبيت الكامل: ${totalFood}\n\n`;
+            tpl +=`●مجموع أعداد الإداريين:\n\n`;
+      tpl +=`عدد ربطات الخبز: ${bread}\n\n`;
+            tpl += `عدد طرود مياه الصحة: ${water}\n\n`;
+
+            // إضافة بيانات الاستلام
+         //   if(receiver || receiptTime) {
+           //     tpl += 📦 بيانات استلام الطعام:\n;
+             //   tpl += وقت الاستلام: ${receiptTime}\n;
+               // tpl += المستلم: ${receiver}\n;
+                //if(delay) tpl += التأخير: ${delay}\n;
+                //tpl += \n;
+            //}
+
+            tpl +=`هل المعسكر بحاجة سكر وشاي؟:\n`;
+            tpl +=`شاي: ${tea}\n`;
+            tpl +=`سكر: ${sugar}`;
+            
+            return tpl;
+        }
+        // --- دالة توليد كليشة الإطعام (استبدال) ---
+        function generateFoodTemplate() {
+            document.getElementById('foodNotes').value = getFoodTemplateText();
+        }
+
+        // --- دالة معاينة الكليشة (عرض فقط) ---
+        function previewFoodTemplate() {
+            const text = getFoodTemplateText();
+            document.getElementById('previewTextContent').value = text;
+            document.getElementById('previewModal').classList.add('show');
+        }
+
+        // --- دالة استخدام النص من المعاينة ---
+        function usePreviewText() {
+            document.getElementById('foodNotes').value = document.getElementById('previewTextContent').value;
+            document.getElementById('previewModal').classList.remove('show');
+        }
+
+        // --- جمع البيانات ---
+        function collectReportData() {
+            const getEl = (id) => document.getElementById(id);
+            const val = (id) => getEl(id)?.value || '';
+            const num = (id) => getEl(id)?.value || '0';
+            
+            const getText = (element) => {
+                if (!element) return '';
+                if (element.tagName.toUpperCase() === 'SELECT' && element.options.length > 0) {
+                    return element.options[element.selectedIndex].text;
+                }
+                return element.value;
+            };
+
+            const textVal = (id) => getText(getEl(id));
+
+            const getRows = (containerId) => {
+                const container = document.getElementById(containerId);
+                if(!container) return '';
+                const rows = container.querySelectorAll('.grid'); 
+                let data = [];
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input, select');
+                    let rowText = [];
+                    inputs.forEach(input => {
+                        if(input.type === 'hidden') return;
+                        let txt = getText(input);
+                        if(txt && txt.trim() !== '') {
+                            rowText.push(txt.trim());
+                        }
+                    });
+                    if(rowText.length > 0) {
+                        data.push(rowText.join(' | '));
+                    }
+                });
+                return data.join('\n');
+            };
+
+            const getTableRows = (containerId) => {
+                const container = document.getElementById(containerId);
+                if (!container) return '';
+                const rows = container.querySelectorAll('tr'); 
+                let data = [];
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input, select');
+                    let rowText = [];
+                    inputs.forEach(input => {
+                        // هنا نضمن التقاط القيم حتى لو كانت مدخلات مخفية إذا كانت تحتوي على قيمة (مثل حالة "شيء آخر")
+                        let txt = getText(input);
+                        if(txt && txt.trim() !== '') {
+                            rowText.push(txt.trim());
+                        }
+                    });
+                    if(rowText.length > 0) {
+                        data.push(rowText.join(' | '));
+                    }
+                });
+                return data.join('\n');
+            };
+            
+            const getContainerValues = (containerId) => {
+                const container = document.getElementById(containerId);
+                if(!container) return [];
+                const rows = container.children;
+                let values = [];
+                for(let row of rows) {
+                    let rowData = [];
+                    const inputs = row.querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        if(input.type !== 'hidden' || input.value) { // التقاط القيمة المخفية إذا كان بها نص
+                             rowData.push(input.type === 'checkbox' ? input.checked : input.value);
+                        }
+                    });
+                    if(rowData.length > 0) values.push(rowData);
+                }
+                return values;
+            };
+
+            let staticInputs = {};
+            const allInputs = document.querySelectorAll('input:not([type="file"]), select, textarea');
+            allInputs.forEach(el => {
+                if (el.id) {
+                    staticInputs[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                }
+            });
+
+            const hasCourse = document.getElementById('hasCourseToggle').checked;
+
+            return {
+                "timestamp": Date.now(), // New field for timestamp
+                "تاريخ التقرير": val('reportDate'),
+                "اسم المركز": val('centerName'),
+                "الضابط المسؤول": val('centerManager'),
+                "رئيس الديوان": val('officeManager'),
+                "الرقم الذاتي": val('managerId'),
+                
+                "يوجد دورة": hasCourse,
+                "اسم الدورة": hasCourse ? val('courseName') : "لا يوجد",
+                "موضوع الدرس": hasCourse ? val('dailyLesson') : "-",
+                "يوم الدورة": hasCourse ? num('currentDay') : "0",
+                "مدة الدورة": hasCourse ? num('courseDuration') : "0",
+                "المتبقي": hasCourse ? num('remainingDays') : "0",
+                "الطقس": textVal('weatherStatus'), 
+                
+                "العدد الكلي للدورة": hasCourse ? num('totalCount') : "0",
+                "العدد الفعلي": hasCourse ? num('actualCount') : "0",
+                "النقص": hasCourse ? document.getElementById('shortageCount').innerText : "0",
+                "نسبة الحضور": hasCourse ? document.getElementById('attendancePercent').innerText : "0%",
+                
+                "اسم المفصول": val('dismissedName'),
+                "رقم المفصول": val('dismissedID'),
+                "سبب الفصل": textVal('dismissalReason'), 
+
+                "كوادر المركز (قائمة)": getRows('staffContainer'),
+                "عدد المدربين": document.getElementById('totalTrainers').innerText,
+                "دروس منفذة": num('lessonsCount'),
+                "ساعات التدريب": num('trainingHours'),
+                "قائمة المدربين": getRows('trainersContainer'),
+                
+                "عدد الكادر الطبي": document.getElementById('totalMedicalLegal').innerText,
+                "قائمة الكادر الطبي": getRows('medicalLegalContainer'),
+                
+                "مسؤول الحرس": val('guardResponsible'),
+                "عدد الحرس الكلي": num('guardTotal'),
+                "عدد الحرس الحضور": num('guardPresent'),
+                "نقص الحرس": val('guardAbsent'),
+                "جاهزية الحرس": document.getElementById('guardPercent').innerText,
+                "الحرس الغياب (قائمة)": getRows('absentGuardsContainer'),
+                
+                "الزيارات الخارجية": getTableRows('visitsContainer'), 
+                
+                "إطعام (كلي)": document.getElementById('totalFoodRequest').innerText,
+                "إطعام (قيادة)": document.getElementById('foodCount_Command').innerText,
+                "إطعام (إداري)": document.getElementById('foodCount_Staff').innerText,
+                "إطعام (مدربين)": document.getElementById('foodCount_Trainers').innerText,
+                "إطعام (طبي)": document.getElementById('foodCount_Med').innerText,
+                "إطعام (حرس)": document.getElementById('foodCount_GuardTotal').innerText,
+                "إطعام (دورة)": document.getElementById('foodCount_Course').innerText,
+                "إطعام (ورشة)": num('workshopCount'),
+                "إطعام (ضيوف)": num('guestCount'),
+                "ملاحظات الطعام": val('foodNotes'),
+                
+                "وقت الاستلام": val('foodReceiptTime'),
+                "مستلم الطعام": val('foodReceiverName'),
+                "تأخير استلام الطعام": val('foodReceiptDelay'),
+                
+                "خبز": val('breadCount'), // الآن نص
+                "مياه": val('waterCount'), // الآن نص
+                "شاي": val('teaCount'), // الآن نص
+                "سكر": val('sugarCount'), // الآن نص
+                
+                "الوضع الأمني والتقارير": val('securityReport'),
+
+                "sentToTelegram": false,
+                
+                "rawData": {
+                    staticInputs: staticInputs,
+                    dynamicData: {
+                        staff: getContainerValues('staffContainer'),
+                        trainers: getContainerValues('trainersContainer'),
+                        med: getContainerValues('medicalLegalContainer'),
+                        guards: getContainerValues('absentGuardsContainer'),
+                        visits: getContainerValues('visitsContainer')
+                    }
+                }
+            };
+        }
+
+        // --- دالة مساعدة لتحديث حالة الـ Modal ---
+        function setStatusStep(stepId, status) {
+            const el = document.getElementById(stepId);
+            el.classList.remove('active', 'completed', 'processing', 'error');
+            
+            if (status === 'active') {
+                el.classList.add('active');
+            } else if (status === 'processing') {
+                el.classList.add('active', 'processing');
+            } else if (status === 'completed') {
+                el.classList.add('active', 'completed');
+            } else if (status === 'error') {
+                el.classList.add('active', 'error');
+            }
+        }
+
+        // --- إرسال التقرير (تفاعلي) ---
+        async function submitReport() {
+            const modal = document.getElementById('sendingStatusModal');
+            const closeBtn = document.getElementById('closeStatusBtn');
+            const finalMsg = document.getElementById('statusFinalMsg');
+            
+            modal.classList.add('show');
+            closeBtn.classList.add('hidden');
+            finalMsg.classList.add('hidden');
+            
+            setStatusStep('step1', 'active');
+            setStatusStep('step2', '');
+            setStatusStep('step3', '');
+
+            setStatusStep('step1', 'processing');
+            await new Promise(r => setTimeout(r, 600));
+
+            const data = collectReportData();
+            // التحقق من حالة زر تفعيل إرسال تقرير الطعام
+            const isFoodReportEnabled = document.getElementById('sendFoodReportToggle').checked;
+            
+            setStatusStep('step1', 'completed');
+
+            setStatusStep('step2', 'processing');
+            await new Promise(r => setTimeout(r, 600)); 
+            
+            let history = JSON.parse(localStorage.getItem('reportHistory')) || [];
+            
+            const token = localStorage.getItem('tg_token');
+            const chatId = localStorage.getItem('tg_chat_id');
+            const tokenFood = localStorage.getItem('tg_token_food') || token;
+            const chatIdFood = localStorage.getItem('tg_chat_id_food');
+
+            // منطق التحديث: إذا كنا في وضع التعديل، نستبدل السجل، وإلا نضيف جديد
+            if (currentEditingIndex > -1) {
+                // التأكد من أن الفهرس صالح
+                if(currentEditingIndex < history.length) {
+                    history[currentEditingIndex] = data; // تحديث
+                } else {
+                    history.push(data); // حالة احتياطية
+                }
+                // إعادة تعيين وضع التعديل
+                cancelEditMode();
+                finalMsg.textContent = "✅ تم تحديث التقرير بنجاح!";
+            } else {
+                history.push(data); // إضافة جديد
+            }
+            
+            localStorage.setItem('reportHistory', JSON.stringify(history));
+            updateFooterStats();
+            setStatusStep('step2', 'completed');
+
+            if (!token || !chatId) {
+                setStatusStep('step3', 'error');
+                finalMsg.textContent += " ⚠️ ولكن تم الحفظ محلياً فقط (إعدادات الإرسال غير مضبوطة)";
+                finalMsg.className = "mt-6 text-center font-bold text-lg text-orange-600";
+                finalMsg.classList.remove('hidden');
+                closeBtn.classList.remove('hidden');
+                return;
+            }
+            
+            setStatusStep('step3', 'processing');
+
+            // تعديل رأس الرسالة إذا كان تعديلاً
+            let msgHeader = `📊 *التقرير اليومي الموحد* \n`;
+            if (currentEditingIndex > -1) {
+                msgHeader = `⚠️ *تعديل: التقرير اليومي الموحد* \n`;
+            }
+
+            let msg = msgHeader;
+            msg += `📅 التاريخ: ${data["تاريخ التقرير"]}\n`;
+            msg += `📍 المركز: ${data["اسم المركز"]}\n`;
+            msg += `--------------------------------\n`;
+            msg += `🔹 *البيانات الإدارية:*\n`;
+            msg += `• الضابط المسؤول: ${data["الضابط المسؤول"]}\n`;
+            msg += `• رئيس الديوان: ${data["رئيس الديوان"]}\n`;
+            msg += `• الرقم الذاتي: ${data["الرقم الذاتي"]}\n`;
+            msg += `• الطقس: ${data["الطقس"]}\n`; 
+            
+            if (data["يوجد دورة"]) {
+                msg += `\n🔹 *معلومات الدورة:*\n`;
+                msg += `• الاسم: ${data["اسم الدورة"]}\n`;
+                msg += `• الدرس: ${data["موضوع الدرس"]}\n`;
+                msg += `• اليوم: ${data["يوم الدورة"]} من ${data["مدة الدورة"]} (بقي ${data["المتبقي"]})\n`;
+                msg += `• التفقد: كلي ${data["العدد الكلي للدورة"]} | فعلي ${data["العدد الفعلي"]} | نقص ${data["النقص"]} (${data["نسبة الحضور"]})\n`;
+                if (data["اسم المفصول"]) msg += `⚠️ *حالات الفصل:* ${data["اسم المفصول"]} (${data["رقم المفصول"]}) - السبب: ${data["سبب الفصل"]}\n`;
+            } else {
+                msg += `\n🔹 *معلومات الدورة:*\n`;
+                msg += `🔸 لا يوجد دورة منعقدة حالياً\n`;
+            }
+
+            msg += `\n🔹 *الكوادر والتدريب:*\n`;
+            msg += `• عدد المدربين: ${data["عدد المدربين"]}\n`;
+            msg += `• دروس منفذة: ${data["دروس منفذة"]} | ساعات: ${data["ساعات التدريب"]}\n`;
+            
+            if(data["قائمة المدربين"]) msg += `🎓 *قائمة المدربين:*\n${data["قائمة المدربين"]}\n`;
+            if(data["كوادر المركز (قائمة)"]) msg += `📜 *قائمة الكوادر:*\n${data["كوادر المركز (قائمة)"]}\n`;
+
+            msg += `\n🔹 *الطبي والشرعي:*\n`;
+            msg += `• العدد: ${data["عدد الكادر الطبي"]}\n`;
+            if(data["قائمة الكادر الطبي"]) msg += `🏥 *القائمة:*\n${data["قائمة الكادر الطبي"]}\n`;
+
+            msg += `\n🔹 *الحرس:*\n`;
+            msg += `• المسؤول: ${data["مسؤول الحرس"]}\n`;
+            msg += `• التفقد: كلي ${data["عدد الحرس الكلي"]} | حضور ${data["عدد الحرس الحضور"]} | غياب ${data["نقص الحرس"]}\n`;
+            msg += `• الجاهزية: ${data["جاهزية الحرس"]}\n`;
+            if(data["الحرس الغياب (قائمة)"]) msg += `🚫 *قائمة الغياب:*\n${data["الحرس الغياب (قائمة)"]}\n`;
+
+            msg += `\n🔹 *الزيارات:*\n`;
+            if(data["الزيارات الخارجية"]) msg += `${data["الزيارات الخارجية"]}\n`;
+            else msg += `لا يوجد زيارات مسجلة.\n`;
+
+            msg += `\n🔹 *الإطعام والتعيينات:*\n`;
+            msg += `• العدد الكلي: ${data["إطعام (كلي)"]}\n`;
+            msg += `   - قيادة: ${data["إطعام (قيادة)"]} | إداري: ${data["إطعام (إداري)"]} | مدربين: ${data["إطعام (مدربين)"]}\n`;
+            msg += `   - طبي: ${data["إطعام (طبي)"]} | حرس: ${data["إطعام (حرس)"]}\n`;
+            if (data["يوجد دورة"]) msg += `   - دورة (العدد): ${data["إطعام (دورة)"]}\n`;
+            msg += `   - ورشة: ${data["إطعام (ورشة)"]} | ضيوف: ${data["إطعام (ضيوف)"]}\n`;
+            
+            if (data["mستلم الطعام"] || data["وقت الاستلام"]) {
+                msg += `📦 *استلام الطعام:* ${data["وقت الاستلام"]} - المستلم: ${data["مستلم الطعام"]}\n`;
+                if(data["تأخير استلام الطعام"]) msg += `⚠️ *تأخير الاستلام:* ${data["تأخير استلام الطعام"]}\n`;
+            }
+            
+            msg += `🛒 *المواد الأساسية:*\n`;
+            msg += `• خبز: ${data["خبز"]} | مياه: ${data["مياه"]}\n`;
+            msg += `• شاي: ${data["شاي"]} | سكر: ${data["سكر"]}\n`;
+            
+            if (data["الوضع الأمني والتقارير"]) {
+                msg += `\n🛡️ *الوضع الأمني والتقارير:*\n${data["الوضع الأمني والتقارير"]}\n`;
+            }
+            
+            msg += `\n✅ *تم الإرسال عبر منظومة التقارير*`;
+
+            let msgFood = "";
+             if (data["ملاحظات الطعام"] && data["ملاحظات الطعام"].includes("اسم المركز:")) {
+                msgFood = data["ملاحظات الطعام"];
+            } else {
+                let staffTotal = (parseInt(data["إطعام (قيادة)"])||0) + (parseInt(data["إطعام (إداري)"])||0) + (parseInt(data["إطعام (مدربين)"])||0) + (parseInt(data["إطعام (طبي)"])||0);
+                msgFood = `السلام عليكم ورحمة الله وبركاته.\n\n🛑ملاحظات: ${data["ملاحظات الطعام"] || ''}\n\n\nاسم المركز: ${data["اسم المركز"]}\n\nنوع الدورة: ${data["اسم الدورة"]}\n\nعدد المتدربين الفعلي: ${data["العدد الفعلي"]}\n\nعدد الكادر الفعلي: ${staffTotal}\n\nعدد الحراس الفعلي: ${data["عدد الحرس الحضور"]}\n\nأعداد متواجدة أخرى في المعسكر ورشة ${data["إطعام (ورشة)"]} ضيوف ${data["إطعام (ضيوف)"]}\nالرقم الإضافي للإطعام الذي يحتاجه المعسكر :\nخبز ${data["خبز"]} و السكر ${data["سكر"]} والشاي ${data["شاي"]} والمياه ${data["مياه"]}\nالعدد الكلي: ${data["إطعام (كلي)"]}`;
+            }
+
+            try {
+                // إرسال 1
+                const response1 = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'Markdown' })
+                });
+
+                // إرسال 2 (مشروط بالتفعيل)
+                let foodReportSent = false;
+                if (chatIdFood && isFoodReportEnabled) { // التحقق من التفعيل هنا
+                    const response2 = await fetch(`https://api.telegram.org/bot${tokenFood}/sendMessage`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ chat_id: chatIdFood, text: msgFood })
+                    });
+                    if (response2.ok) foodReportSent = true;
+                }
+                
+                if(response1.ok) {
+                    // تحديث الحالة في السجل بأنها أرسلت
+                    history[history.length - 1].sentToTelegram = true; // نحدث آخر عنصر تم إضافته أو تعديله
+                    localStorage.setItem('reportHistory', JSON.stringify(history));
+                    updateFooterStats();
+
+                    setStatusStep('step3', 'completed');
+                    finalMsg.textContent = "✅ تم الإرسال بنجاح!";
+                    finalMsg.className = "mt-6 text-center font-bold text-lg text-green-600";
+                    
+                    if (chatIdFood) {
+                        if (isFoodReportEnabled && !foodReportSent) {
+                            finalMsg.textContent += " (تعذر إرسال تقرير الطعام)";
+                        } else if (!isFoodReportEnabled) {
+                             finalMsg.textContent += " (تم تجاهل تقرير الطعام لأنه معطل)";
+                        }
+                    }
+                } else {
+                    setStatusStep('step3', 'error');
+                    finalMsg.textContent = "⚠️ فشل الاتصال بتيليجرام (تحقق من التوكن)";
+                    finalMsg.className = "mt-6 text-center font-bold text-lg text-red-600";
+                }
+
+            } catch (e) {
+                console.error(e);
+                setStatusStep('step3', 'error');
+                finalMsg.textContent = "❌ خطأ في الشبكة";
+                finalMsg.className = "mt-6 text-center font-bold text-lg text-red-600";
+            } finally {
+                finalMsg.classList.remove('hidden');
+                closeBtn.classList.remove('hidden');
+            }
+        }
+
+        // --- وظيفة إرسال ملف Excel إلى تيليجرام ---
+        async function sendExcelFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert('يرجى اختيار ملف أولاً');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const token = localStorage.getItem('tg_token');
+            const chatId = localStorage.getItem('tg_chat_id');
+
+            if (!token || !chatId) {
+                alert('يرجى ضبط إعدادات التيليجرام أولاً من قائمة الإعدادات');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('document', file);
+            formData.append('caption', `📂 ملف مرسل من لوحة التحكم: ${file.name}`);
+
+            try {
+                // إظهار مؤشر التحميل
+                alert('جاري إرسال الملف، يرجى الانتظار...');
+                
+                const response = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('✅ تم إرسال الملف بنجاح!');
+                } else {
+                    const err = await response.json();
+                    alert('❌ فشل الإرسال: ' + (err.description || 'تحقق من التوكن وحجم الملف'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('❌ خطأ في الشبكة');
+            }
+        }
+
+        // --- وظائف الأرشيف (History) ---
+        function openArchiveModal() {
+            const modal = document.getElementById('archiveModal');
+            const tbody = document.getElementById('archiveTableBody');
+            const emptyMsg = document.getElementById('emptyArchiveMsg');
+            const history = JSON.parse(localStorage.getItem('reportHistory')) || [];
+
+            tbody.innerHTML = '';
+            
+            if (history.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                history.slice().reverse().forEach((report, index) => {
+                    // index هنا معكوس، نحتاج index الحقيقي في المصفوفة الأصلية
+                    const originalIndex = history.length - 1 - index;
+                    
+                    const row = document.createElement('tr');
+                    row.className = "bg-white hover:bg-gray-100 transition";
+                    
+                    const statusHtml = report.sentToTelegram 
+                        ? '<span class="px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-bold">مرسل ✅</span>'
+                        : '<span class="px-2 py-1 rounded bg-orange-100 text-orange-700 text-xs font-bold">محفوظ فقط 💾</span>';
+                    
+                    // التحقق من إمكانية التعديل (10 دقائق)
+                    const reportTime = report.timestamp || 0;
+                    const canEdit = (Date.now() - reportTime) < (10 * 60 * 1000); // 10 دقائق بالميلي ثانية
+                    
+                    const editButtonHtml = canEdit 
+                        ? `<button onclick="loadReportForEdit(${originalIndex})" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs font-bold flex items-center gap-1"><i data-lucide="edit" class="w-3 h-3"></i> تعديل</button>`
+                        : `<button class="bg-gray-300 text-gray-500 px-3 py-1 rounded cursor-not-allowed text-xs font-bold flex items-center gap-1" title="انتهت مهلة التعديل (10 دقائق)"><i data-lucide="lock" class="w-3 h-3"></i> مقفل</button>`;
+
+                    row.innerHTML = `
+                        <td class="p-3 border-b">${report["تاريخ التقرير"] || '-'}</td>
+                        <td class="p-3 border-b">${report["اسم المركز"] || '-'}</td>
+                        <td class="p-3 border-b">${statusHtml}</td>
+                        <td class="p-3 border-b text-center flex items-center justify-center gap-2">
+                            ${editButtonHtml}
+                            <button onclick="deleteReport(${originalIndex})" class="bg-red-100 text-red-600 p-2 rounded hover:bg-red-200 transition" title="حذف نهائي">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            lucide.createIcons();
+            modal.classList.add('show');
+        }
+
+        // دالة حذف التقرير من الأرشيف
+        function deleteReport(index) {
+            if(confirm("هل أنت متأكد من حذف هذا التقرير نهائياً من الأرشيف؟")) {
+                const history = JSON.parse(localStorage.getItem('reportHistory')) || [];
+                if(index >= 0 && index < history.length) {
+                    history.splice(index, 1);
+                    localStorage.setItem('reportHistory', JSON.stringify(history));
+                    updateFooterStats();
+                    openArchiveModal(); // Refresh
+                }
+            }
+        }
+
+        // دالة ملء النموذج بالبيانات
+        function populateFormWithData(data) {
+            // التحقق من وجود البيانات الخام (للتقارير القديمة)
+            if (!data.rawData) {
+                alert("تنبيه: هذا التقرير قديم ولا يحتوي على كافة البيانات القابلة للتعديل. سيتم استرجاع البيانات الأساسية فقط.");
+                if(data["اسم المركز"]) document.getElementById('centerName').value = data["اسم المركز"];
+                if(data["تاريخ التقرير"]) document.getElementById('reportDate').value = data["تاريخ التقرير"];
+                return;
+            }
+
+            if (data.rawData && data.rawData.staticInputs) {
+                for (const [id, value] of Object.entries(data.rawData.staticInputs)) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (el.type === 'checkbox') {
+                            el.checked = value;
+                            el.dispatchEvent(new Event('change'));
+                        } else {
+                            // تعيين القيمة بأمان
+                            el.value = (value === null || value === undefined) ? '' : value;
+                            el.dispatchEvent(new Event('input'));
+                            el.dispatchEvent(new Event('change'));
+                        }
+                    }
+                }
+            }
+
+            if (data.rawData && data.rawData.dynamicData) {
+                document.getElementById('staffContainer').innerHTML = '';
+                document.getElementById('trainersContainer').innerHTML = '';
+                document.getElementById('medicalLegalContainer').innerHTML = '';
+                document.getElementById('absentGuardsContainer').innerHTML = '';
+                document.getElementById('visitsContainer').innerHTML = '';
+
+                const fillRow = (containerId, values, addFn) => {
+                    if (!values) return;
+                    values.forEach(rowData => {
+                        addFn(); 
+                        const container = document.getElementById(containerId);
+                        const lastRow = container.lastElementChild; 
+                        const inputs = lastRow.querySelectorAll('input, select');
+                        
+                        rowData.forEach((val, index) => {
+                            if(inputs[index]) {
+                                if(inputs[index].type === 'checkbox') {
+                                    inputs[index].checked = val;
+                                } else {
+                                    // التأكد من أن القيمة ليست فارغة عند الاسترجاع
+                                    const safeVal = (val === null || val === undefined) ? '' : val;
+                                    inputs[index].value = safeVal;
+                                }
+                                inputs[index].dispatchEvent(new Event('change'));
+                            }
+                        });
+                    });
+                };
+
+                fillRow('staffContainer', data.rawData.dynamicData.staff, addStaffRow);
+                fillRow('trainersContainer', data.rawData.dynamicData.trainers, addTrainerRow);
+                fillRow('medicalLegalContainer', data.rawData.dynamicData.med, addMedicalLegalRow);
+                fillRow('absentGuardsContainer', data.rawData.dynamicData.guards, addAbsentGuardRow);
+                fillRow('visitsContainer', data.rawData.dynamicData.visits, addVisitRow);
+            }
+
+            calculateStats();
+            calculateGuardStats();
+            calculateFoodTotals();
+        }
+
+        function loadReportForEdit(index) {
+            const history = JSON.parse(localStorage.getItem('reportHistory')) || [];
+            if (index >= 0 && index < history.length) {
+                const report = history[index];
+                
+                if (confirm("سيتم استبدال البيانات الحالية في النموذج ببيانات هذا التقرير لغرض التعديل. هل أنت متأكد؟")) {
+                    populateFormWithData(report);
+                    currentEditingIndex = index; // تعيين وضع التعديل
+                    
+                    document.getElementById('editModeIndicator').classList.add('show');
+                    document.getElementById('archiveModal').classList.remove('show');
+                    
+                    // التمرير للأعلى
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }
+
+        function cancelEditMode() {
+            currentEditingIndex = -1;
+            document.getElementById('editModeIndicator').classList.remove('show');
+        }
+
+        // --- وظائف النسخ الاحتياطي والاستعادة ---
+        function exportBackup() {
+            const currentData = collectReportData();
+            const backupData = {
+                timestamp: new Date().toISOString(),
+                staticInputs: currentData.rawData.staticInputs,
+                dynamicData: currentData.rawData.dynamicData,
+                reportHistory: JSON.parse(localStorage.getItem('reportHistory')) || []
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "full_backup_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importBackup(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.reportHistory && Array.isArray(data.reportHistory)) {
+                        if (confirm(`تم العثور على ${data.reportHistory.length} سجلات سابقة. هل تريد دمجها؟`)) {
+                            localStorage.setItem('reportHistory', JSON.stringify(data.reportHistory));
+                            updateFooterStats();
+                        }
+                    }
+                    const formData = {
+                        rawData: {
+                            staticInputs: data.staticInputs,
+                            dynamicData: data.dynamicData
+                        }
+                    };
+                    populateFormWithData(formData);
+                    alert('✅ تم استعادة حالة النموذج بنجاح!');
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ حدث خطأ أثناء قراءة ملف النسخة الاحتياطية.');
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; 
+        }
+
+        // --- تنزيل ملف Excel (تسمية مخصصة) ---
+        function downloadExcel() {
+            let allData = JSON.parse(localStorage.getItem('reportHistory')) || [];
+            
+            // إذا لم يكن هناك سجلات، نضيف الحالي
+            if (allData.length === 0) {
+                const currentData = collectReportData();
+                allData.push(currentData);
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(allData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "التقارير");
+            
+            // تحديد اسم الملف الديناميكي (اسم المركز + التاريخ)
+            const centerName = document.getElementById('centerName').value || 'المركز';
+            const date = document.getElementById('reportDate').value || new Date().toISOString().split('T')[0];
+            // تنظيف الاسم من أحرف غير مسموحة في الملفات
+            const safeCenterName = centerName.replace(/[/\\?%*:|"<>]/g, '-').trim();
+            
+            const fileName = `التقرير_اليومي_${safeCenterName || 'مجهول'}_${date}.xlsx`;
+            
+            XLSX.writeFile(workbook, fileName);
+        }
+
+        // --- وظائف عامة ---
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        function toggleMenu() {
+            mobileMenu.classList.toggle('open');
+            menuBtn.innerHTML = mobileMenu.classList.contains('open') ? 
+                '<i data-lucide="x" class="w-7 h-7"></i>' : 
+                '<i data-lucide="menu" class="w-7 h-7"></i>';
+            lucide.createIcons();
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+
+        function updateFileName() {
+            const fileInput = document.getElementById('fileInput');
+            const display = document.getElementById('fileNameDisplay');
+            const text = document.getElementById('fileNameText');
+            if (fileInput.files.length > 0) {
+                text.textContent = fileInput.files[0].name;
+                display.classList.remove('hidden');
+            }
+        }
+
+        function clearFile() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = '';
+            document.getElementById('fileNameDisplay').classList.add('hidden');
+        }
+
+        const reminders = [
+            "قال رسول الله صلى الله عليه وسلم: (الطهور شطر الإيمان).",
+            "اللهم إنا نسألك علماً نافعاً.",
+            "قال تعالى: ﴿وَبَشِّرِ الصَّابِرِينَ﴾.",
+            "سبحان الله وبحمده، سبحان الله العظيم.",
+            "لا حول ولا قوة إلا بالله.",
+            "أستغفر الله العظيم وأتوب إليه.",
+            "اللهم صلِّ وسلم على نبينا محمد."
+        ];
+
+        function setRandomReminder() {
+            const reminderEl = document.getElementById('islamicReminder');
+            const randomIndex = Math.floor(Math.random() * reminders.length);
+            reminderEl.textContent = reminders[randomIndex];
+        }
+
+        function updateWeatherDisplay() {
+            const select = document.getElementById('weatherStatus');
+            const iconDisplay = document.getElementById('weatherIconDisplay');
+            const textDisplay = document.getElementById('weatherTextDisplay');
+            const weatherIcons = {'صحو': '☀️', 'غائم جزئي': '⛅', 'غائم': '☁️', 'ماطر': '🌧️', 'رياح شديدة': '💨', 'ضبابي': '🌫️'};
+            const selectedText = select.value;
+            iconDisplay.textContent = weatherIcons[selectedText] || '❓';
+            textDisplay.textContent = selectedText;
+        }
+
+        function checkRamadanDate(dateString) {
+            if (!dateString) return;
+            const inputDate = new Date(dateString);
+            const year = inputDate.getFullYear();
+            const ramadanStart = new Date(year, 1, 17); 
+            const ramadanEnd = new Date(ramadanStart);
+            ramadanEnd.setDate(ramadanStart.getDate() + 29);
+            const body = document.body;
+            const greeting = document.getElementById('ramadanGreeting');
+            inputDate.setHours(0,0,0,0);
+            ramadanStart.setHours(0,0,0,0);
+            ramadanEnd.setHours(0,0,0,0);
+            if (inputDate >= ramadanStart && inputDate <= ramadanEnd) {
+                if (!body.classList.contains('ramadan-mode')) {
+                    body.classList.add('ramadan-mode');
+                    greeting.classList.remove('hidden');
+                }
+            } else {
+                body.classList.remove('ramadan-mode');
+                greeting.classList.add('hidden');
+            }
+            document.getElementById('currentDateDisplay').textContent = dateString;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('reportDate');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+            setRandomReminder();
+            updateWeatherDisplay();
+            checkRamadanDate(today);
+            
+            // إضافة صفوف أولية افتراضية
+            if(document.getElementById('staffContainer').children.length === 0) addStaffRow();
+            if(document.getElementById('trainersContainer').children.length === 0) addTrainerRow();
+            if(document.getElementById('medicalLegalContainer').children.length === 0) addMedicalLegalRow();
+            if(document.getElementById('visitsContainer').children.length === 0) addVisitRow();
+            
+            calculateFoodTotals();
+            populateTimeSelect();
+        });
+
+        // --- الحسابات والواجهة (نفس المنطق السابق) ---
+        function calculateDays() {
+            const current = parseInt(document.getElementById('currentDay').value) || 0;
+            const duration = parseInt(document.getElementById('courseDuration').value) || 0;
+            const remaining = duration - current;
+            document.getElementById('remainingDays').value = remaining >= 0 ? remaining : 0;
+        }
+
+        function calculateStats() {
+            const total = parseInt(document.getElementById('totalCount').value) || 0;
+            const actual = parseInt(document.getElementById('actualCount').value) || 0;
+            const shortage = total - actual;
+            const shortageEl = document.getElementById('shortageCount');
+            shortageEl.textContent = shortage > 0 ? shortage : 0;
+            shortageEl.className = shortage > 0 ? "text-xl font-black text-red-600" : "text-xl font-black text-green-600";
+            let percent = 0;
+            if (total > 0) percent = Math.round((actual / total) * 100);
+            document.getElementById('attendancePercent').textContent = percent + "%";
+        }
+
+        function calculateGuardStats() {
+            const total = parseInt(document.getElementById('guardTotal').value) || 0;
+            const present = parseInt(document.getElementById('guardPresent').value) || 0;
+            const absent = total - present;
+            document.getElementById('guardAbsent').value = absent > 0 ? absent : 0;
+            let percent = 0;
+            if (total > 0) percent = Math.round((present / total) * 100);
+            document.getElementById('guardPercent').textContent = percent + "%";
+            calculateFoodTotals();
+        }
+
+        function toggleDismissalSection() {
+            const checkbox = document.getElementById('hasDismissalToggle');
+            const container = document.getElementById('dismissalContainer');
+            if (checkbox.checked) container.classList.remove('hidden');
+            else {
+                container.classList.add('hidden');
+                document.getElementById('dismissedName').value = '';
+                document.getElementById('dismissedID').value = '';
+                document.getElementById('dismissalReason').value = '';
+                document.getElementById('otherReasonInput').classList.add('hidden');
+            }
+        }
+
+        function toggleOtherReason() {
+            const select = document.getElementById('dismissalReason');
+            const otherInput = document.getElementById('otherReasonInput');
+            if (select.value === 'other') {
+                otherInput.classList.remove('hidden');
+                otherInput.focus();
+            } else {
+                otherInput.classList.add('hidden');
+                otherInput.value = ''; 
+            }
+        }
+
+        function toggleCourseSection() {
+            const isChecked = document.getElementById('hasCourseToggle').checked;
+            const fieldsWrapper = document.getElementById('courseFieldsWrapper');
+            const noCourseMsg = document.getElementById('noCourseMsg');
+            const statusText = document.getElementById('courseStatusText');
+            if (isChecked) {
+                fieldsWrapper.classList.remove('hidden');
+                noCourseMsg.classList.add('hidden');
+                statusText.textContent = "يوجد دورة منعقدة حالياً";
+                statusText.classList.remove('text-gray-400');
+                statusText.classList.remove('text-gray-500');
+            } else {
+                fieldsWrapper.classList.add('hidden');
+                noCourseMsg.classList.remove('hidden');
+                statusText.textContent = "لا يوجد دورة";
+                statusText.classList.add('text-gray-400');
+            }
+            calculateFoodTotals(); 
+        }
+
+        function calculateFoodTotals() {
+            const centerMgr = document.getElementById('centerManager').value.trim() !== '' ? 1 : 0;
+            const officeMgr = document.getElementById('officeManager').value.trim() !== '' ? 1 : 0;
+            const commandTotal = centerMgr + officeMgr;
+            document.getElementById('foodCount_Command').textContent = commandTotal;
+            const staffCount = document.querySelectorAll('.staff-row').length;
+            document.getElementById('foodCount_Staff').textContent = staffCount;
+            const trainersCount = document.querySelectorAll('.trainer-row').length;
+            document.getElementById('foodCount_Trainers').textContent = trainersCount;
+            const medCount = document.querySelectorAll('.med-row').length;
+            document.getElementById('foodCount_Med').textContent = medCount;
+            const guardMgr = document.getElementById('guardResponsible').value.trim() !== '' ? 1 : 0;
+            const guardSoldiers = parseInt(document.getElementById('guardPresent').value) || 0;
+            const totalGuards = guardMgr + guardSoldiers;
+            document.getElementById('foodCount_GuardTotal').textContent = totalGuards;
+            
+            let courseFood = 0;
+            if (document.getElementById('hasCourseToggle').checked) {
+                const actualTrainees = parseInt(document.getElementById('actualCount').value) || 0;
+                courseFood = actualTrainees; 
+            }
+            document.getElementById('foodCount_Course').textContent = courseFood;
+
+            const workshop = parseInt(document.getElementById('workshopCount').value) || 0;
+            const guests = parseInt(document.getElementById('guestCount').value) || 0;
+            const grandTotal = commandTotal + staffCount + trainersCount + medCount + totalGuards + courseFood + workshop + guests;
+            document.getElementById('totalFoodRequest').textContent = grandTotal;
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+                if (rowId.startsWith('trainer-')) calculateTrainerStats();
+                if (rowId.startsWith('med-')) calculateMedicalLegalStats();
+                calculateFoodTotals();
+            }
+        }
+
+        function toggleReasonInput(selectElement) {
+            const row = selectElement.closest('.staff-row, .trainer-row, .med-row');
+            const reasonContainer = row.querySelector('.reason-container');
+            const value = selectElement.value;
+            if (value !== 'present') {
+                reasonContainer.classList.remove('hidden');
+                setTimeout(() => reasonContainer.classList.remove('opacity-0'), 10);
+            } else {
+                reasonContainer.classList.add('opacity-0');
+                setTimeout(() => reasonContainer.classList.add('hidden'), 300);
+                reasonContainer.querySelector('input').value = '';
+            }
+        }
+
+        function toggleVisitOther(select) {
+            const input = select.nextElementSibling;
+            if (select.value === 'other') {
+                input.classList.remove('hidden');
+                input.focus();
+            } else {
+                input.classList.add('hidden');
+                input.value = '';
+            }
+        }
+
+        function toggleStaffPaste() {
+            const el = document.getElementById('staffPasteSection');
+            el.classList.toggle('hidden');
+        }
+
+        function toggleTrainerPaste() {
+            const el = document.getElementById('trainerPasteSection');
+            el.classList.toggle('hidden');
+        }
+
+        function toggleMedicalPaste() {
+            const el = document.getElementById('medicalPasteSection');
+            el.classList.toggle('hidden');
+        }
+
+        // دالة مشتركة للتحليل (Parsing)
+        function parsePastedLine(line) {
+            // نمط: "الاسم","الصفة"
+            const match = line.trim().match(/^"([^"]+)"\s*,\s*"([^"]+)"$/);
+            if (match) {
+                return { name: match[1], role: match[2] };
+            }
+            return null;
+        }
+
+        function processStaffPaste() {
+            const text = document.getElementById('staffPasteText').value;
+            if (!text.trim()) return;
+            
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                const parsed = parsePastedLine(line);
+                if (parsed) {
+                    addStaffRow();
+                    const container = document.getElementById('staffContainer');
+                    const lastRow = container.lastElementChild;
+                    const inputs = lastRow.querySelectorAll('input');
+                    const selects = lastRow.querySelectorAll('select');
+                    
+                    if(inputs[0]) inputs[0].value = parsed.name;
+                    if(inputs[1]) inputs[1].value = parsed.role;
+                    if(selects[0]) selects[0].value = 'present';
+                }
+            });
+            
+            document.getElementById('staffPasteText').value = '';
+            toggleStaffPaste();
+            calculateFoodTotals();
+        }
+
+        function processTrainerPaste() {
+            const text = document.getElementById('trainerPasteText').value;
+            if (!text.trim()) return;
+            
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                const parsed = parsePastedLine(line);
+                if (parsed) {
+                    addTrainerRow();
+                    const container = document.getElementById('trainersContainer');
+                    const lastRow = container.lastElementChild;
+                    const inputs = lastRow.querySelectorAll('input');
+                    const selects = lastRow.querySelectorAll('select');
+                    
+                    // inputs[0] = Name, inputs[1] = Role (text)
+                    if(inputs[0]) inputs[0].value = parsed.name;
+                    if(inputs[1]) inputs[1].value = parsed.role;
+                    if(selects[0]) selects[0].value = 'present';
+                }
+            });
+            
+            document.getElementById('trainerPasteText').value = '';
+            toggleTrainerPaste();
+            calculateFoodTotals();
+        }
+
+        function processMedicalPaste() {
+            const text = document.getElementById('medicalPasteText').value;
+            if (!text.trim()) return;
+            
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                const parsed = parsePastedLine(line);
+                if (parsed) {
+                    addMedicalLegalRow();
+                    const container = document.getElementById('medicalLegalContainer');
+                    const lastRow = container.lastElementChild;
+                    const inputs = lastRow.querySelectorAll('input');
+                    const selects = lastRow.querySelectorAll('select');
+                    
+                    // inputs[0] = Name, inputs[1] = Role (text)
+                    if(inputs[0]) inputs[0].value = parsed.name;
+                    if(inputs[1]) inputs[1].value = parsed.role;
+                    if(selects[0]) selects[0].value = 'present';
+                }
+            });
+            
+            document.getElementById('medicalPasteText').value = '';
+            toggleMedicalPaste();
+            calculateFoodTotals();
+        }
+
+        function addStaffRow() {
+            const container = document.getElementById('staffContainer');
+            const rowId = 'staff-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const rowHtml = `
+                <div id="${rowId}" class="staff-row grid grid-cols-1 md:grid-cols-12 gap-4 items-start border-b border-gray-100 pb-4 mb-4 relative animate-fade-in-down">
+                    <div class="md:col-span-3"><div class="relative"><i data-lucide="user" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" class="custom-input pr-9" placeholder="الاسم الكامل"></div></div>
+                    <div class="md:col-span-3"><div class="relative"><i data-lucide="badge-info" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" class="custom-input pr-9" placeholder="مثال: تعيينات / لوجستي"></div></div>
+                    <div class="md:col-span-2"><select class="custom-select font-bold text-sm" onchange="toggleReasonInput(this)"><option value="present" class="text-green-700">✅ حاضر</option><option value="justified" class="text-orange-600">⚠️ غياب مبرر</option><option value="unjustified" class="text-red-600">❌ غياب غير مبرر</option><option value="mission" class="text-blue-600">🚙 مهمة رسمية</option><option value="vacation" class="text-purple-600">🏠 إجازة</option></select></div>
+                    <div class="md:col-span-3 reason-container hidden opacity-0 transition-all duration-300"><input type="text" class="custom-input border-red-200 bg-red-50 text-red-900 focus:border-red-500" placeholder="اذكر السبب..."></div>
+                    <div class="md:col-span-1 flex justify-center pt-2"><button type="button" class="p-2 text-red-400 hover:text-red-600" onclick="removeRow('${rowId}')"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+            calculateFoodTotals();
+        }
+
+        function addTrainerRow() {
+            const container = document.getElementById('trainersContainer');
+            const rowId = 'trainer-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            // تم تحويل حقل الصفة إلى input ليدعم النص الحر
+            const rowHtml = `
+                <div id="${rowId}" class="trainer-row grid grid-cols-1 md:grid-cols-12 gap-4 items-start border-b border-gray-100 pb-4 mb-4 relative animate-fade-in-down">
+                    <div class="md:col-span-3"><div class="relative"><i data-lucide="user" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" class="custom-input pr-9" placeholder="اسم المدرب"></div></div>
+                    <div class="md:col-span-3"><input type="text" class="custom-input font-bold text-sm" placeholder="الصفة (مدرب/مساعد)"></div>
+                    <div class="md:col-span-2"><select class="custom-select font-bold text-sm" onchange="toggleReasonInput(this)"><option value="present" class="text-green-700">✅ حاضر</option><option value="justified" class="text-orange-600">⚠️ غياب مبرر</option><option value="unjustified" class="text-red-600">❌ غياب غير مبرر</option><option value="mission" class="text-blue-600">🚙 مهمة رسمية</option><option value="vacation" class="text-purple-600">🏠 إجازة</option></select></div>
+                    <div class="md:col-span-3 reason-container hidden opacity-0 transition-all duration-300"><input type="text" class="custom-input border-red-200 bg-red-50 text-red-900 focus:border-red-500" placeholder="اذكر السبب..."></div>
+                    <div class="md:col-span-1 flex justify-center pt-2"><button type="button" class="p-2 text-red-400 hover:text-red-600" onclick="removeRow('${rowId}')"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+            calculateTrainerStats();
+            calculateFoodTotals();
+        }
+        function calculateTrainerStats() { document.getElementById('totalTrainers').textContent = document.querySelectorAll('.trainer-row').length; }
+
+        function addMedicalLegalRow() {
+            const container = document.getElementById('medicalLegalContainer');
+            const rowId = 'med-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            // تم تحويل حقل الصفة إلى input ليدعم النص الحر
+            const rowHtml = `
+                <div id="${rowId}" class="med-row grid grid-cols-1 md:grid-cols-12 gap-4 items-start border-b border-gray-100 pb-4 mb-4 relative animate-fade-in-down">
+                    <div class="md:col-span-3"><div class="relative"><i data-lucide="user" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none h-full w-8 text-gray-400"></i><input type="text" class="custom-input pr-9" placeholder="الاسم"></div></div>
+                    <div class="md:col-span-3"><input type="text" class="custom-input font-bold text-sm" placeholder="الصفة (طبي/شرعي)"></div>
+                    <div class="md:col-span-2"><select class="custom-select font-bold text-sm" onchange="toggleReasonInput(this)"><option value="present" class="text-green-700">✅ حاضر</option><option value="justified" class="text-orange-600">⚠️ مبرر</option><option value="unjustified" class="text-red-600">❌ غير مبرر</option></select></div>
+                    <div class="md:col-span-3 reason-container hidden opacity-0 transition-all duration-300"><input type="text" class="custom-input border-red-200 bg-red-50 text-red-900 focus:border-red-500" placeholder="اذكر السبب..."></div>
+                    <div class="md:col-span-1 flex justify-center pt-2"><button type="button" class="p-2 text-red-400 hover:text-red-600" onclick="removeRow('${rowId}')"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+            calculateMedicalLegalStats();
+            calculateFoodTotals();
+        }
+        function calculateMedicalLegalStats() { document.getElementById('totalMedicalLegal').textContent = document.querySelectorAll('.med-row').length; }
+
+        function addAbsentGuardRow() {
+            const container = document.getElementById('absentGuardsContainer');
+            const rowId = 'guard-absent-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const rowHtml = `
+                <div id="${rowId}" class="guard-row grid grid-cols-1 md:grid-cols-12 gap-3 items-center bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative animate-fade-in-down">
+                     <div class="md:col-span-4"><input type="text" class="custom-input" placeholder="اسم العنصر الغائب"></div>
+                     <div class="md:col-span-3"><select class="custom-select font-bold"><option value="unjustified" class="text-red-600">❌ غير مبرر</option><option value="justified" class="text-orange-600">⚠️ مبرر</option></select></div>
+                     <div class="md:col-span-4"><input type="text" class="custom-input" placeholder="سبب الغياب / الملاحظات"></div>
+                     <div class="md:col-span-1 flex justify-center"><button type="button" onclick="removeRow('${rowId}')" class="text-gray-400 hover:text-red-500"><i data-lucide="x-circle" class="w-6 h-6"></i></button></div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+        }
+
+        function addVisitRow() {
+            const container = document.getElementById('visitsContainer');
+            const rowId = 'visit-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const rowHtml = `
+                <tr id="${rowId}" class="bg-white hover:bg-gray-50 transition-colors border-b border-gray-100 animate-fade-in-down">
+                    <td class="p-2"><input type="text" class="custom-input text-sm" placeholder="اسم الزائر"></td>
+                    <td class="p-2"><input type="text" class="custom-input text-sm" placeholder="صفته"></td>
+                    <td class="p-2">
+                        <select class="custom-select text-sm font-bold w-full" onchange="toggleVisitOther(this)">
+                            <option value="coordinated">✅ منسقة</option>
+                            <option value="uncoordinated">❌ غير منسقة</option>
+                            <option value="friend">👋 زيارة صديق</option>
+                            <option value="relatives">👨‍👩‍👧‍👦 أقارب</option>
+                            <option value="follow_up">🕵️ قسم المتابعة</option>
+                            <option value="routine">🔄 جولة روتينية</option>
+                            <option value="other" class="text-purple-600 font-bold">✏️ نوع آخر (حدد)</option>
+                        </select>
+                        <input type="text" class="custom-input text-sm mt-2 hidden placeholder-gray-400 text-purple-700 font-bold" placeholder="تحديد التنسيق">
+                    </td>
+                    <td class="p-2"><input type="text" class="custom-input text-sm" placeholder="مثال: ساعتين"></td>
+                    <td class="p-2"><input type="text" class="custom-input text-sm" placeholder="ملاحظات إضافية"></td>
+                    <td class="p-2 text-center"><button type="button" onclick="removeRow('${rowId}')" class="text-red-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+                </tr>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            lucide.createIcons();
+        }
+
+        // --- حذف البيانات ---
+        function confirmReset() {
+            if (confirm("⚠️ تحذير: هل أنت متأكد من حذف جميع البيانات والسجلات؟\n\nلا يمكن التراجع عن هذه العملية!")) {
+                localStorage.removeItem('reportHistory');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
