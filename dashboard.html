@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>التقرير النهائي الشهري لخطة العمل — آب 2026 | A4</title>
+<title>منشئ التقرير النهائي الشهري | Excel إلى A4</title>
 <!--
   إعداد بصري مخصّص لطباعة A4 أفقية. الألوان هنا قيم RGB محافظة ومناسبة للنسخ الطباعية.
   لا يمكن ضمان إخراج CMYK نهائي من HTML/المتصفح؛ للتحضير المطبعي الاحترافي
@@ -154,238 +154,257 @@
 .page .prio-label { justify-content:flex-end; }
 .page .status-list.has-extra-status { gap:0; }
 .page .status-list.has-extra-status .status-item {min-height:6.9mm;font-size:6.8pt;}
-/* ===== واجهة التطبيق — منفصلة تماماً عن صفحة A4 ===== */
-body { overflow:hidden; background:#eef2f4; }
-.app-shell { height:100vh; min-height:0; display:grid; grid-template-rows:62px minmax(0,1fr); direction:rtl; }
-.app-toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:0 23px;
-  background:#122c40; border-bottom:3px solid #227f79; color:#eef8fb; position:relative; z-index:5; }
-.app-brand { display:flex; flex-direction:column; gap:3px; min-width:0; }
-.app-brand b { font-size:15px; white-space:nowrap; }
-.app-brand small { font-size:10px; color:#aac5cd; white-space:nowrap; }
-.app-actions { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
-.ui-button { border:1px solid #cddde3; border-radius:8px; background:#fff; color:#1e4255;
-  padding:10px 14px; font:700 12px "Noto Sans Arabic",Tahoma,Arial,sans-serif; cursor:pointer;
-  display:inline-flex; gap:8px; align-items:center; justify-content:center; white-space:nowrap; transition:background .16s,border-color .16s; }
-.ui-button:hover { background:#f0f7f7; border-color:#83b7b1; }
-.ui-button:focus-visible,.upload-drop:focus-visible { outline:3px solid #8bd3c4;outline-offset:2px; }
-.ui-button.primary { color:white;background:#197a74;border-color:#197a74; }
-.ui-button.primary:hover { background:#126b65; }
-.ui-button.ghost { background:#183a51; color:#edf5f7; border-color:#42677b; }
-.ui-button.ghost:hover { background:#27516b; }
-.ui-button[disabled] { cursor:not-allowed; opacity:.45; }
-.app-workspace { min-height:0; min-width:0; display:grid; grid-template-columns: minmax(350px,420px) minmax(0,1fr); }
-.source-pane { padding:18px 15px 28px 20px; background:#f7fafb; border-left:1px solid #d5e1e4; overflow-y:auto; overscroll-behavior:contain; }
-.pane-title { display:flex; align-items:center; justify-content:space-between; margin:0 0 12px; }
-.pane-title h2 { font-family:"Noto Sans Arabic",Tahoma,sans-serif;font-size:15px; }
-.pane-pill { font-size:10px;font-weight:800;border:1px solid #d8e6eb;border-radius:12px;padding:5px 9px;background:white;color:#527080; }
-.src-card { background:#fff;border:1px solid #dbe5e9;border-radius:11px;padding:14px;margin-bottom:12px;box-shadow:0 2px 9px rgba(37,63,77,.035); }
-.src-card h3 { color:#243f52;font-size:12px;margin:0 0 12px;font-weight:850; }
-.src-intro { color:#687e8a;font-size:11px;line-height:1.9;margin:0 0 12px; }
-.upload-drop { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
- padding:21px 14px;border:2px dashed #91bbb9;border-radius:11px;cursor:pointer;background:#f4faf9;
- color:#1f635e;text-align:center;transition:background .16s,border-color .16s; }
-.upload-drop:hover,.upload-drop.dragover { border-color:#167b73;background:#e9f7f4; }
-.upload-drop svg { width:36px;height:36px; }
-.upload-drop strong { font-size:13px; }
-.upload-drop span { font-size:10px;color:#6d848c; }
-.upload-drop.busy { opacity:.6; pointer-events:none; }
-#fileInput { display:none; }
-.src-privacy { font-size:10px;color:#607783;line-height:1.8;margin:11px 0 0; }
-.src-status { font-size:11px;line-height:1.85;padding:9px 11px;background:#eaf1f4;color:#37596a;border-radius:8px;margin-bottom:12px;border-right:3px solid #5d8291; }
-.src-status.ok { background:#eaf6f1;border-right-color:#278978;color:#246b62; }
-.src-status.error { background:#fff1ed;border-right-color:#c45f47;color:#9a4035; }
-.src-status.warn { background:#fff8e9;border-right-color:#c18b38;color:#805e2d; }
-.src-file-meta { display:grid;grid-template-columns:90px minmax(0,1fr);gap:7px 10px;font-size:11px;line-height:1.75; }
-.src-file-meta span { color:#788e9b; }
-.src-file-meta b { color:#29495a;overflow-wrap:anywhere;font-weight:750; }
-.src-stat-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
-.src-stat { border:1px solid #dfebec;border-radius:8px;padding:9px 11px;background:#fbfdfd; }
-.src-stat label { display:block;font-size:10px;color:#5b7784;margin-bottom:5px; }
-.src-stat b { color:#214356;direction:ltr;display:block;text-align:right;font-size:18px;line-height:1.3; }
-.src-tabular { width:100%;border-collapse:collapse;text-align:right;font-size:10.5px;table-layout:fixed; }
-.src-tabular th,.src-tabular td { padding:7px 5px;border-bottom:1px solid #ecf0f3; }
-.src-tabular th { color:#5a7584;background:#f4f8fa;font-weight:800; }
-.src-tabular td { color:#35566a; }
-.src-tabular td.num { direction:ltr;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap; }
-.src-table-scroll { width:100%;overflow:auto; }
-.src-footnote { margin:9px 0 0;color:#6d8291;line-height:1.8;font-size:10px; }
-.src-original-text { font-size:11px;line-height:1.95;color:#395769;margin:0;padding:10px 11px;border-right:3px solid #75b0aa;background:#f3f8f9;border-radius:5px; }
-.src-warning { margin-top:9px;border:1px solid #efd4a9;background:#fffbf0;border-radius:6px;padding:9px 11px;color:#805c26;line-height:1.7;font-size:10.5px; }
-.src-warning strong { display:block;margin-bottom:4px; }
-.preview-pane { display:flex;min-height:0;min-width:0;flex-direction:column;background:#e7eef0; }
-.preview-toolbar { flex:none; display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 23px;
- color:#4e6b7a;font-size:11px;border-bottom:1px solid #d6e1e6;background:#f7fafb; }
-.preview-toolbar strong { color:#29495c;font-size:12px; }
-.preview-tools { display:flex; align-items:center; gap:9px; }
-.preview-select { border-radius:7px;border:1px solid #d1e1e6;background:white;padding:7px 9px;
- font:750 11px "Noto Sans Arabic",Tahoma,sans-serif;color:#315568; }
-.preview-scroll { min-width:0;min-height:0;overflow:auto;flex:1;display:flex;align-items:flex-start;justify-content:center; padding:17px 15px; }
-.paper-stage { position:relative;flex:none; }
-.paper-stage .page { margin:0;position:absolute;top:0;right:0; transform-origin:top right;box-shadow:0 7px 29px rgba(35,56,67,.19); }
-.preview-watermark { position:absolute; z-index:2;left:50%;top:13px;transform:translateX(-50%);
- background:rgba(255,249,225,.96);border:1px solid #edcc87;padding:5px 10px;border-radius:5px;
- color:#936d28;font:700 11px "Noto Sans Arabic",Tahoma,sans-serif;white-space:nowrap;pointer-events:none; }
-.preview-watermark.loaded { display:none; }
-@media(max-width:950px) {
-  body { overflow:auto; }
-  .app-shell { height:auto; min-height:100vh; display:block; }
-  .app-toolbar { min-height:62px;flex-wrap:wrap;padding:13px; }
-  .app-brand b { font-size:13px; }
-  .app-workspace { display:flex;flex-direction:column; }
-  .source-pane { overflow:visible;padding:14px; }
-  .preview-pane { min-height:63vh; }
-  .preview-scroll { min-height:54vh;padding:13px; }
-}
-@media print {
-  @page { size: A4 landscape; margin:0; }
-  html,body { width:297mm !important;height:210mm !important;overflow:visible !important;background:#fff !important;margin:0 !important;padding:0 !important; }
-  .app-shell,.app-workspace,.preview-pane,.preview-scroll,.paper-stage {display:block!important;height:auto!important;min-height:0!important;width:auto!important;
-    overflow:visible!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;}
-  .app-toolbar,.source-pane,.preview-toolbar,.preview-watermark {display:none!important;}
-  .paper-stage .page { position:static!important;top:auto!important;right:auto!important;transform:none!important;
-    margin:0!important;box-shadow:none!important;width:297mm!important;height:210mm!important;break-inside:avoid; }
+
+/* ========== تطبيق الاستيراد - معزول عن القالب المطبعي ========== */
+:root {--ui-navy:#173449;--ui-deep:#10283b;--ui-teal:#147e76;--ui-blue:#397997;--ui-muted:#667f90;--ui-line:#dce7ec;--ui-canvas:#f2f5f8;}
+html,body{min-width:0;}
+body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
+.app-shell{min-width:0;min-height:100dvh;height:100dvh;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;direction:rtl;font-family:'Noto Sans Arabic',Tahoma,Arial,sans-serif;font-size:13px;}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px clamp(16px,2vw,32px);background:linear-gradient(110deg,#193e51,#102a3d);color:white;border-bottom:3px solid #298b82;box-shadow:0 5px 16px rgba(15,39,55,.1);}
+.app-header-brand{display:flex;align-items:center;gap:13px;min-width:0;}
+.brand-mark{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;padding:11px;width:49px;height:49px;flex:none;background:rgba(255,255,255,.07);border:1px solid rgba(187,229,230,.35);border-radius:13px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);}
+.brand-mark i{display:block;border-radius:3px;background:#68c5b9;}.brand-mark i:nth-child(2){opacity:.65}.brand-mark i:nth-child(3){opacity:.75}
+.header-eyebrow{display:block;color:#96c2c9;font-size:10px;font-weight:800;line-height:1.7;letter-spacing:.05px;}
+.app-header-brand h1{font-family:'Noto Kufi Arabic','Noto Sans Arabic',Tahoma,sans-serif;font-size:17px;color:#fff;line-height:1.5;font-weight:850;white-space:normal;margin:0;}
+.app-header-brand p{margin:3px 0 0;color:#bed1db;font-size:11px;line-height:1.55;}
+.app-actions{display:flex;align-items:center;justify-content:flex-start;gap:9px;flex:none;}
+.ui-button{appearance:none;display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:39px;padding:9px 13px;border:1px solid #b7cbd3;border-radius:8px;background:#fff;color:#27485a;font:800 11.5px 'Noto Sans Arabic',Tahoma,Arial,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .15s,background .15s,border-color .15s;}
+.ui-button svg{height:15px;width:15px;flex:none;}
+.ui-button:not(:disabled):hover{transform:translateY(-1px);border-color:#81bdba;background:#f4fbfa;}
+.ui-button:focus-visible,.upload-drop:focus-visible,.preview-select:focus-visible{outline:3px solid #81d1c8;outline-offset:3px;}
+.ui-button.ghost{background:rgba(255,255,255,.07);color:#e5f4f4;border-color:rgba(185,222,230,.3);}
+.ui-button.ghost:not(:disabled):hover{background:rgba(255,255,255,.14);}
+.ui-button.primary{background:#1b9384;color:#fff;border-color:#279f94;box-shadow:0 3px 8px rgba(0,0,0,.13);}
+.ui-button.primary:not(:disabled):hover{background:#168274;}
+.ui-button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none;}
+.workflow-strip{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px clamp(16px,2vw,32px);background:#fff;border-bottom:1px solid var(--ui-line);min-height:49px;}
+.workflow-list{display:flex;gap:10px 22px;align-items:center;flex-wrap:wrap;}
+.workflow-item{display:flex;align-items:center;gap:7px;color:#708797;font-size:11px;font-weight:750;white-space:nowrap;}
+.workflow-item .step-number{display:grid;place-items:center;height:24px;width:24px;border-radius:8px;background:#eef4f6;color:#647d8b;border:1px solid #dce8ee;font:900 11px Arial,sans-serif;}
+.workflow-item:first-child{color:#166e66;}.workflow-item:first-child .step-number{background:#e4f5f0;color:#12796f;border-color:#c1e5dd;}
+.workflow-state{display:inline-flex;gap:6px;align-items:center;background:#f3f7fa;border:1px solid #dfebef;padding:6px 10px;border-radius:18px;color:#547286;font-size:10.5px;font-weight:750;white-space:nowrap;}
+.workflow-state:before{content:'';display:inline-block;background:#80a0ad;width:7px;height:7px;border-radius:50%;}
+.app-shell.has-data .workflow-state:before{background:#269481;}
+.app-workspace{min-width:0;min-height:0;display:grid;grid-template-columns:minmax(336px,390px) minmax(0,1fr);}
+.source-pane{min-width:0;padding:17px 15px 28px;background:#f8fafb;border-left:1px solid #dce5eb;overflow:auto;scrollbar-color:#c3d3dc transparent;overscroll-behavior:contain;}
+.pane-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 15px;}
+.pane-title h2{font:850 15px 'Noto Sans Arabic',Tahoma,sans-serif;margin:0;color:#18394e;}
+.pane-title p{margin:3px 0 0;font-size:10.5px;color:#6f8492;line-height:1.6;}
+.pane-pill{display:inline-flex;align-items:center;white-space:nowrap;gap:5px;font-size:10px;font-weight:800;color:#6b8492;background:#fff;border:1px solid #dce7ec;padding:6px 9px;border-radius:18px;}
+.pane-pill:before{content:'';width:7px;height:7px;border-radius:50%;background:#a1b6c0;}
+.app-shell.has-data .pane-pill{color:#13766c;background:#e8f8f4;border-color:#c4e8df;}.app-shell.has-data .pane-pill:before{background:#1c9383;}
+.src-card{min-width:0;background:#fff;border:1px solid #dde7eb;border-radius:13px;padding:15px 16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(23,54,72,.035);}
+.src-card h3{font-size:12.5px;color:#24465b;font-weight:850;margin:0 0 11px;display:flex;gap:7px;align-items:center;}
+.card-step{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#edf5f5;color:#207b74;font:bold 11px Arial,sans-serif;flex:none;}
+.src-intro{color:#627c8a;font-size:11.5px;line-height:1.9;margin:0 0 14px;}
+.src-intro b{color:#21645d;}
+.upload-card{border:1px solid #cbdfe2;box-shadow:0 5px 23px rgba(25,64,73,.055);}
+.upload-drop{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;text-align:center;cursor:pointer;border:1.6px dashed #83b8b3;border-radius:11px;background:linear-gradient(160deg,#f6fcfb,#eef9f7);padding:21px 13px;color:#2c726b;transition:background .16s,border-color .16s;}
+.upload-drop svg{width:32px;height:32px;}.upload-icon{display:grid;place-items:center;width:62px;height:62px;border-radius:20px;background:#e2f4ee;border:1px solid #cfeae1;}
+.upload-drop strong{font-size:12px;color:#246a63;line-height:1.8;}.upload-drop span{color:#66878a;font-size:10.5px;line-height:1.65;}
+.upload-drop:hover,.upload-drop.dragover{background:#e8f7f3;border-color:#278a7b;}
+.upload-drop.busy{pointer-events:none;opacity:.7;}
+#fileInput{display:none;}.src-privacy{font-size:10px;color:#728996;line-height:1.85;margin:11px 0 0;}
+#uploadedName{display:block;overflow-wrap:anywhere;color:#2b7b74;font-size:10px;margin:10px 2px 0;min-height:14px;}
+.file-progress{display:flex;align-items:center;gap:9px;margin:9px 0 0;color:#377e76;font-size:10.5px;}
+.file-progress[hidden]{display:none;}.loading-spinner{width:15px;height:15px;flex:none;border:2px solid #cde8e2;border-top-color:#238778;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.src-status{margin:0 0 12px;background:#edf4f7;border:1px solid #dbe8ef;border-right:3px solid #7e9aa8;border-radius:8px;color:#4b6878;font-size:10.5px;line-height:1.75;padding:10px 12px;}
+.src-status.ok{background:#ecf8f2;border-color:#d0e9de;border-right-color:#26977b;color:#246b5f;}
+.src-status.error{background:#fff2ef;border-color:#f4ded8;border-right-color:#c36254;color:#9b493d;}
+.src-status.warn{background:#fff9ed;border-color:#f3e5c8;border-right-color:#c68d36;color:#835c29;}
+.before-guide{padding:15px;background:#fff;border:1px solid #e0e8eb;border-radius:12px;color:#486577;}
+.before-guide h3{margin:0 0 12px;font-size:12px;color:#2a4b5b;}.before-guide ul{margin:0;padding:0 18px 0 0;line-height:2.25;font-size:11px;}
+.before-guide small{display:block;margin-top:11px;border-top:1px solid #edf1f4;padding-top:10px;font-size:10px;line-height:1.8;color:#708493;}
+.app-shell.has-data .before-guide{display:none;}.app-shell:not(.has-data) .data-only{display:none!important;}
+.src-file-meta{display:grid;grid-template-columns:93px minmax(0,1fr);gap:8px 9px;font-size:11px;line-height:1.75;}
+.src-file-meta span{color:#788b98;}.src-file-meta b{color:#294a5b;font-weight:800;overflow-wrap:anywhere;}
+.src-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.src-stat{background:#f8fbfc;border:1px solid #e0e9ee;border-radius:9px;padding:10px 11px;min-width:0;}
+.src-stat label{color:#678092;font-size:10px;display:block;margin-bottom:5px;}.src-stat b{display:block;color:#21455b;font-size:18px;font-weight:900;line-height:1.3;text-align:right;direction:ltr;font-variant-numeric:tabular-nums;}
+.src-table-scroll{min-width:0;width:100%;overflow:auto;}.src-tabular{min-width:0;width:100%;border-collapse:collapse;text-align:right;font-size:10px;table-layout:fixed;}
+.src-tabular th,.src-tabular td{padding:8px 5px;border-bottom:1px solid #e9f0f2;}.src-tabular th{font-weight:850;color:#6b8090;background:#f4f8fa;}.src-tabular td{color:#35576b;}
+.src-tabular td.num{text-align:center;direction:ltr;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:800;}.src-footnote{font-size:10px;color:#708796;margin:9px 0 0;line-height:1.85;}
+.src-original-text{color:#385b67;background:#f4f9fa;border-right:3px solid #82b7ae;border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.95;margin:0;}
+.src-warning{border:1px solid #eed3ab;background:#fffbf2;border-radius:7px;padding:10px;margin-top:11px;color:#815e30;font-size:10.5px;line-height:1.8;}.src-warning strong{display:block;}
+.preview-pane{display:flex;flex-direction:column;min-width:0;min-height:0;background:#e9f0f4;}
+.preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-bottom:1px solid #dce6eb;padding:13px 21px;min-height:58px;flex:none;}
+.preview-toolbar-copy{display:flex;flex-direction:column;gap:3px;}.preview-toolbar strong{color:#29495a;font-size:12.5px;}.preview-toolbar small{font-size:10px;color:#718795;}
+.preview-tools{display:flex;align-items:center;gap:9px;color:#587486;font-size:10px;white-space:nowrap;}
+.preview-select{border:1px solid #d9e5ec;border-radius:7px;color:#385e70;font:800 10px 'Noto Sans Arabic',Tahoma,sans-serif;background:#fff;padding:7px;max-width:145px;}
+.preview-scroll{position:relative;flex:1;min-width:0;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:21px 18px;}
+.paper-stage{position:relative;flex:none;}.paper-stage .page{margin:0;position:absolute;top:0;right:0;transform-origin:top right;box-shadow:0 8px 28px rgba(25,55,72,.19);}
+.app-shell:not(.has-data) .paper-stage{display:none;}.app-shell:not(.has-data) .preview-tools{opacity:.45;pointer-events:none;}
+.empty-preview{align-self:center;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;padding:38px 26px;width:min(100%,500px);border:1px dashed #c2d5df;background:rgba(255,255,255,.87);border-radius:18px;box-shadow:0 12px 38px rgba(28,60,79,.055);color:#36596d;}
+.empty-page-icon{width:99px;height:116px;border-radius:9px;background:#fff;border:2px solid #b7cfda;box-shadow:0 6px 18px rgba(39,83,100,.08);display:flex;flex-direction:column;gap:9px;padding:16px 13px;margin-bottom:22px;position:relative;}
+.empty-page-icon:before{content:'';display:block;width:45px;height:9px;border-radius:3px;background:#d2e5e9;}.empty-page-icon:after{content:'';height:24px;border-radius:4px;background:linear-gradient(90deg,#d5e9e7 0 35%,#e7eef3 35% 68%,#d6e8f1 68%);}
+.empty-page-icon .blank-line{height:5px;background:#e5edf1;border-radius:4px;display:block;}.empty-page-icon .blank-line.short{width:63%;}
+.empty-preview h2{font:850 19px 'Noto Kufi Arabic','Noto Sans Arabic',Tahoma,sans-serif;color:#254759;margin:0 0 9px;line-height:1.6;}.empty-preview p{font-size:12px;color:#688091;line-height:2;max-width:330px;margin:0;}
+.empty-chip{margin-top:20px;display:inline-flex;align-items:center;gap:8px;background:#eaf6f4;color:#2c796e;border:1px solid #d4ebe5;padding:8px 12px;border-radius:18px;font-size:10.5px;font-weight:800;}.empty-chip:before{content:'';height:7px;width:7px;border-radius:50%;background:#269280;}
+.app-shell.has-data .empty-preview{display:none;}
+.app-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px clamp(16px,2vw,32px);background:#fff;border-top:1px solid #dbe6eb;color:#708697;font-size:10.5px;min-height:41px;}
+.app-footer .footer-lock{display:flex;align-items:center;gap:7px;}.app-footer .footer-lock svg{height:14px;width:14px;stroke:#318477;flex:none;}
+.app-footer strong{font-weight:800;color:#466778;}
+@media(max-width:1240px){.app-header{gap:11px}.app-actions{gap:5px}.ui-button{padding:9px 10px;font-size:10.5px}.app-header-brand h1{font-size:15px}.app-workspace{grid-template-columns:minmax(320px,350px) minmax(0,1fr)}}
+@media(max-width:900px){body{overflow:auto}.app-shell{height:auto;min-height:100dvh;grid-template-rows:auto auto auto auto;}.app-header{flex-wrap:wrap;}.app-actions{width:100%;justify-content:flex-start;}.app-workspace{display:flex;flex-direction:column;min-height:0;}.source-pane{overflow:visible;padding:16px;order:0;border-left:0;}.preview-pane{order:1;min-height:440px;}.preview-scroll{min-height:400px;padding:16px;}.app-footer{flex-wrap:wrap;}.src-card{max-width:none;}}
+@media(max-width:580px){.app-header{padding:14px 14px 13px;}.brand-mark{width:41px;height:41px;padding:9px;border-radius:10px;}.app-header-brand h1{font-size:13px;}.app-header-brand p{font-size:10px}.header-eyebrow{font-size:9px}.app-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}.ui-button{font-size:10px;white-space:normal;padding:9px 5px;min-height:42px;line-height:1.55;}.ui-button svg{display:none}.workflow-strip{padding:10px 14px;flex-wrap:wrap;}.workflow-list{width:100%;justify-content:space-between;gap:3px;}.workflow-item{font-size:9.5px;gap:3px;}.workflow-item .step-number{height:20px;width:20px;border-radius:6px;font-size:9px;}.workflow-state{font-size:9px;padding:5px 9px;}.source-pane{padding:13px 12px;}.src-card{padding:13px 12px;}.pane-title h2{font-size:14px;}.preview-toolbar{padding:12px;flex-wrap:wrap;}.preview-scroll{min-height:310px;padding:12px 10px;}.empty-preview{padding:24px 15px;}.empty-preview h2{font-size:16px;}.empty-page-icon{width:80px;height:90px;padding:12px;gap:6px;margin-bottom:16px;}.app-footer{font-size:9px;padding:12px;gap:5px;}}
+@media print{
+ @page{size:A4 landscape;margin:0;}
+ html,body{min-width:0!important;width:297mm!important;height:210mm!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;}
+ .app-shell,.app-workspace,.preview-pane,.preview-scroll,.paper-stage{display:block!important;height:auto!important;min-height:0!important;width:auto!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;}
+ .app-header,.workflow-strip,.app-footer,.source-pane,.preview-toolbar,.empty-preview{display:none!important;}
+ .paper-stage .page{display:grid!important;position:static!important;top:auto!important;right:auto!important;transform:none!important;margin:0!important;box-shadow:none!important;width:297mm!important;height:210mm!important;break-inside:avoid!important;}
 }
 
 </style>
 </head>
 <body>
 
-<div class="app-shell">
-  <div class="app-toolbar">
-    <div class="app-brand"><b>منشئ التقرير الشهري</b><small>قراءة ورقة Excel المحددة + معاينة القالب الأصلي A4 في الوقت نفسه</small></div>
-    <div class="app-actions">
-      <button class="ui-button ghost" type="button" id="resetBtn">↺ &nbsp;البيانات التجريبية</button>
-      <button class="ui-button ghost" type="button" id="saveBtn" disabled>↓ &nbsp;حفظ HTML بالبيانات</button>
-      <button class="ui-button primary" type="button" id="printBtn" disabled>▣ &nbsp;طباعة / حفظ PDF</button>
-    </div>
+<div class="app-shell" id="appShell">
+ <header class="app-header" role="banner">
+  <div class="app-header-brand">
+   <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+   <div><span class="header-eyebrow">نظام إعداد التقارير · Excel إلى A4</span><h1>منشئ التقرير النهائي الشهري</h1><p>استيراد دقيق، مراجعة واضحة، ومعاينة مباشرة قبل الطباعة</p></div>
   </div>
-  <div class="app-workspace">
-    <aside class="source-pane" aria-label="واجهة رفع وقراءة تقرير Excel">
-      <div class="pane-title"><h2>بيانات ورقة Excel</h2><span class="pane-pill" id="modePill">وضع تجريبي</span></div>
-      <div class="src-card">
-        <h3>1. رفع ملف خطة العمل</h3>
-        <p class="src-intro">ارفع ملف Excel؛ ستُقرأ ورقة <b>«التقرير النهائي الشهري»</b> فقط، ولن تُستخدم بقية الأوراق لحساب أي أرقام.</p>
-        <label class="upload-drop" id="dropArea" for="fileInput" tabindex="0" role="button" aria-label="اختر ملف Excel أو اسحبه هنا">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3M12 16V3m-5 5 5-5 5 5"/><path d="M4 14h16"/></svg>
-          <strong>اضغط لاختيار Excel، أو اسحب الملف هنا</strong><span>XLSX / XLSM — الحد الأقصى 25 ميغابايت</span>
-        </label>
-        <input type="file" id="fileInput" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12">
-        <p class="src-privacy">✓ يعمل محلياً داخل المتصفح، دون إرسال ملفك إلى خادم. يُرجى حفظ الملف من Excel بعد تحديث الحسابات لتخزين نتائج الصيغ.</p>
-      </div>
-      <div class="src-status" id="statusBar" role="status" aria-live="polite">القالب يعرض حالياً بيانات توضيحية. ارفع Excel لإدراج القيم الحقيقية وتمكين الطباعة.</div>
-      <div class="src-card"><h3>2. مصدر التقرير</h3><div class="src-file-meta">
-        <span>الملف</span><b id="srcFilename">لم يُرفع بعد</b>
-        <span>الورقة</span><b id="srcSheet">التقرير النهائي الشهري</b>
-        <span>الفترة</span><b id="srcMonth">آب 2026 (توضيحي)</b>
-        <span>تاريخ التقرير</span><b id="srcDate">17/09/2026 (توضيحي)</b>
-        <span>حالة البيانات</span><b id="srcMode">مثال القالب الأصلي</b>
-      </div></div>
-      <div class="src-card"><h3>3. المؤشرات المستخرجة</h3><div id="srcStats" class="src-stat-grid"></div></div>
-      <div class="src-card"><h3>4. ملخص الحالات من الورقة</h3><div class="src-table-scroll"><table class="src-tabular"><thead><tr><th style="width:51%">الحالة</th><th>العدد</th><th>النسبة</th></tr></thead><tbody id="srcStatuses"></tbody></table></div></div>
-      <div class="src-card"><h3>5. أولويات المهام</h3><div class="src-table-scroll"><table class="src-tabular"><thead><tr><th style="width:41%">الأولوية</th><th>العدد</th><th>Excel</th><th>القالب</th></tr></thead><tbody id="srcPriorities"></tbody></table></div><p class="src-footnote">تنبيه: عمود النسبة F في ملف Excel محسوب من إجمالي المهام المسجلة؛ قالب الطباعة يعرض حصة الأولوية من المهام <b>المخطّطة</b> للحفاظ على معناه الأصلي.</p></div>
-      <div class="src-card"><h3>6. تنفيذ الجهات</h3><div class="src-table-scroll"><table class="src-tabular" style="min-width:545px"><thead><tr><th style="width:36%">الجهة</th><th>المهام</th><th>منجزة</th><th>متبقية</th><th>الإنجاز</th><th>التأخر</th></tr></thead><tbody id="srcDepartments"></tbody></table></div></div>
-      <div class="src-card"><h3>7. النص الأصلي للخلاصة في Excel</h3><p class="src-original-text" id="srcExcelSummary"></p><p class="src-footnote">تعاد صياغة صندوق المتابعة في قالب الطباعة آلياً من الأرقام والجهات المستخرجة، بينما يظهر نص Excel الأصلي هنا كما هو.</p><div id="checks"></div></div>
-    </aside>
-    <section class="preview-pane" aria-label="المعاينة الفورية للصفحة الطباعية">
-      <div class="preview-toolbar"><strong>معاينة التقرير • ورقة واحدة A4 أفقية</strong>
-        <div class="preview-tools"><label for="zoomSelect">الحجم:</label>
-          <select class="preview-select" id="zoomSelect"><option value="fit">ملائم للنافذة</option><option value="1">100%</option><option value="0.85">85%</option><option value="0.7">70%</option><option value="0.5">50%</option></select>
-          <span id="zoomLabel">—</span>
-        </div>
-      </div>
-      <div class="preview-scroll" id="previewScroll"><div class="paper-stage" id="paperStage"><div class="preview-watermark" id="watermark">بيانات تجريبية — ارفع ملف Excel</div>
-<main class="page" aria-label="التقرير النهائي الشهري لخطة العمل لشهر آب 2026">
-  <header class="header">
-    <div class="head-main">
-      <div class="mark" aria-label="العلامة البصرية في القالب الأصلي"><span></span><span></span><span></span><span></span></div>
-      <div>
-        <div class="eyebrow">إدارة التدريب العسكري <span class="slash">/</span> فرع الرقابة والتفتيش</div>
-        <h1>التقرير النهائي الشهري لخطة العمل</h1>
-        <div class="head-sub">لوحة متابعة التنفيذ والأداء التشغيلي لشهر آب 2026</div>
-      </div>
+  <div class="app-actions" aria-label="أدوات التقرير">
+    <button class="ui-button ghost" type="button" id="resetBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg>إزالة الملف</button>
+    <button class="ui-button ghost" type="button" id="saveBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>حفظ التقرير HTML</button>
+    <button class="ui-button primary" type="button" id="printBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 15h12v7H6z"/></svg>طباعة / حفظ PDF</button>
+  </div>
+ </header>
+ <nav class="workflow-strip" aria-label="مراحل إنشاء التقرير">
+  <div class="workflow-list"><div class="workflow-item"><span class="step-number">01</span>ارفع ملف Excel</div><div class="workflow-item"><span class="step-number">02</span>راجع البيانات</div><div class="workflow-item"><span class="step-number">03</span>اطبع التقرير</div></div>
+  <div class="workflow-state" id="workflowState">ابدأ برفع الملف</div>
+ </nav>
+ <div class="app-workspace">
+  <aside class="source-pane" aria-label="استيراد ومراجعة بيانات Excel">
+   <div class="pane-title"><div><h2>استيراد بيانات التقرير</h2><p>ارفع ملفك لعرض النتائج الفعلية فقط</p></div><span class="pane-pill" id="modePill">بانتظار Excel</span></div>
+   <div class="src-card upload-card">
+    <h3><span class="card-step">1</span> اختر ملف خطة العمل</h3>
+    <p class="src-intro">يقرأ النظام <b>ورقة «التقرير النهائي الشهري» فقط</b> ويستخدم قيمها في تحديث قالب الطباعة دون الاستناد إلى الأوراق الأخرى.</p>
+    <label class="upload-drop" id="dropArea" for="fileInput" tabindex="0" role="button" aria-label="اختر ملف Excel أو اسحبه هنا">
+      <span class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></span>
+      <strong>اضغط لاختيار الملف أو اسحبه وأفلته هنا</strong><span>يدعم XLSX / XLSM · الحد الأقصى 25 MB</span>
+    </label>
+    <input type="file" id="fileInput" accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12">
+    <div id="fileProgress" class="file-progress" hidden><span class="loading-spinner" aria-hidden="true"></span>جارٍ استخراج البيانات والتحقق منها…</div>
+    <span id="uploadedName">لم يتم تحديد ملف بعد</span>
+    <p class="src-privacy">تُقرأ البيانات محلياً داخل متصفحك دون إرسالها إلى خادم. احفظ الملف من Excel بعد تحديث نتائج الصيغ.</p>
+   </div>
+   <div class="src-status" id="statusBar" role="status" aria-live="polite">لم يتم استيراد أي بيانات بعد. ارفع ملف Excel لعرض النتيجة الفعلية.</div>
+   <section class="before-guide" aria-label="الخطوات القادمة">
+      <h3>ماذا سيحدث بعد اختيار الملف؟</h3>
+      <ul><li>قراءة ورقة التقرير النهائي الشهري فقط.</li><li>عرض المؤشرات والحالات والجهات للمراجعة.</li><li>إنشاء صفحة A4 أفقية بنفس القالب الكامل.</li></ul>
+      <small>لن تُعرض أي أرقام افتراضية؛ ستظهر المعاينة بعد نجاح الاستيراد فقط.</small>
+   </section>
+   <section class="src-card data-only" aria-label="ملف المصدر"><h3><span class="card-step">2</span> معلومات الملف</h3><div class="src-file-meta">
+      <span>الملف</span><b id="srcFilename">—</b><span>الورقة</span><b id="srcSheet">التقرير النهائي الشهري</b>
+      <span>الفترة</span><b id="srcMonth">—</b><span>تاريخ التقرير</span><b id="srcDate">—</b>
+      <span>حالة البيانات</span><b id="srcMode">بانتظار الملف</b>
+    </div></section>
+   <section class="src-card data-only"><h3><span class="card-step">3</span> المؤشرات المستخرجة</h3><div id="srcStats" class="src-stat-grid"></div></section>
+   <section class="src-card data-only"><h3><span class="card-step">4</span> حالات تنفيذ المهام</h3><div class="src-table-scroll"><table class="src-tabular"><thead><tr><th style="width:51%">الحالة</th><th>العدد</th><th>النسبة</th></tr></thead><tbody id="srcStatuses"></tbody></table></div></section>
+   <section class="src-card data-only"><h3><span class="card-step">5</span> أولويات المهام</h3><div class="src-table-scroll"><table class="src-tabular"><thead><tr><th style="width:41%">الأولوية</th><th>العدد</th><th>Excel</th><th>القالب</th></tr></thead><tbody id="srcPriorities"></tbody></table></div><p class="src-footnote">نِسَب Excel محسوبة من إجمالي المهام؛ أما نسب التقرير الطباعي فمحسوبة من المهام المخططة للحفاظ على منطق القالب.</p></section>
+   <section class="src-card data-only"><h3><span class="card-step">6</span> التنفيذ حسب الجهة</h3><div class="src-table-scroll"><table class="src-tabular" style="min-width:545px"><thead><tr><th style="width:36%">الجهة</th><th>المهام</th><th>منجزة</th><th>متبقية</th><th>الإنجاز</th><th>التأخر</th></tr></thead><tbody id="srcDepartments"></tbody></table></div></section>
+   <section class="src-card data-only"><h3><span class="card-step">7</span> خلاصة Excel والتحقق</h3><p class="src-original-text" id="srcExcelSummary"></p><p class="src-footnote">هذه الخلاصة مأخوذة كما هي من Excel، بينما يُحدث صندوق المتابعة في القالب من القيم المستخرجة.</p><div id="checks"></div></section>
+  </aside>
+  <section class="preview-pane" aria-label="معاينة صفحة التقرير">
+    <div class="preview-toolbar"><div class="preview-toolbar-copy"><strong>المعاينة المباشرة · التقرير الشهري</strong><small id="previewState">بانتظار رفع الملف</small></div>
+      <div class="preview-tools"><label for="zoomSelect">التكبير</label><select class="preview-select" id="zoomSelect"><option value="fit">ملائم للنافذة</option><option value="1">100%</option><option value="0.85">85%</option><option value="0.7">70%</option><option value="0.5">50%</option></select><b id="zoomLabel">—</b></div>
     </div>
-    <div class="head-meta">
-      <div class="meta-item"><div class="meta-label">فترة التقرير</div><div class="meta-value">آب 2026</div></div>
-      <div class="meta-item"><div class="meta-label">تاريخ الإصدار</div><div class="meta-value" dir="ltr">17/09/2026</div></div>
-      <div class="meta-item"><div class="meta-label">الجهات المشمولة</div><div class="meta-value">8 جهات</div></div>
-    </div>
-  </header>
+    <div class="preview-scroll" id="previewScroll">
+       <div class="empty-preview" id="emptyPreview"><div class="empty-page-icon" aria-hidden="true"><span class="blank-line"></span><span class="blank-line short"></span><span class="blank-line"></span></div><h2>تقريرك سيظهر هنا</h2><p>بعد رفع ملف خطة العمل، ستُحدَّث جميع عناصر القالب تلقائياً وتظهر نتيجة بياناتك في هذه المساحة.</p><span class="empty-chip">صفحة A4 أفقية جاهزة للطباعة</span></div>
+       <div class="paper-stage" id="paperStage">
+<main aria-label="التقرير النهائي الشهري لخطة العمل لشهر آب 2026" class="page">
+<header class="header">
+<div class="head-main">
+<div aria-label="العلامة البصرية في القالب الأصلي" class="mark"><span></span><span></span><span></span><span></span></div>
+<div>
+<div class="eyebrow">إدارة التدريب العسكري <span class="slash">/</span> فرع الرقابة والتفتيش</div>
+<h1>التقرير النهائي الشهري لخطة العمل</h1>
+<div class="head-sub"></div>
+</div>
+</div>
+<div class="head-meta">
+<div class="meta-item"><div class="meta-label">فترة التقرير</div><div class="meta-value"></div></div>
+<div class="meta-item"><div class="meta-label">تاريخ الإصدار</div><div class="meta-value" dir="ltr"></div></div>
+<div class="meta-item"><div class="meta-label">الجهات المشمولة</div><div class="meta-value"></div></div>
+</div>
+</header>
+<section aria-label="المؤشرات الرئيسية" class="stats">
+<article class="kpi" style="--acc:#34799f"><div class="kpi-top"><span>إجمالي المهام المسجلة</span><span class="kpi-icon"><svg class="icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><rect height="16" rx="3" width="16" x="4" y="4"></rect><path d="M8 9h8M8 13h8M8 17h5"></path></svg></span></div><div class="kpi-number"></div><div class="kpi-note">جميع مصادر التكليف</div></article>
+<article class="kpi" style="--acc:#526e91"><div class="kpi-top"><span>المهام المخططة</span><span class="kpi-icon"><svg class="icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><rect height="16" rx="2" width="18" x="3" y="5"></rect><path d="M7 3v4M17 3v4M3 10h18"></path></svg></span></div><div class="kpi-number"></div><div class="kpi-note"></div></article>
+<article class="kpi" style="--acc:#ac772d"><div class="kpi-top"><span>الطارئة والإضافية</span><span class="kpi-icon"><svg class="icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M13 2 5 13h6l-1 9 9-12h-6z"></path></svg></span></div><div class="kpi-number"></div><div class="kpi-note"></div></article>
+<article class="kpi" style="--acc:#167b73"><div class="kpi-top"><span>المهام المنجزة</span><span class="kpi-icon"><svg class="icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="m4 12 5 5L20 6"></path></svg></span></div><div class="kpi-number"></div><div class="kpi-note"></div></article>
+<article class="kpi kpi-main" style="--acc:#167b73"><div class="kpi-top"><span>نسبة الإنجاز العام</span><span class="kpi-icon"><svg class="icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 17 10 11l4 4 6-7M15 8h5v5"></path></svg></span></div><div class="kpi-number"></div><div class="kpi-note"></div></article>
+</section>
+<section aria-label="تفاصيل التنفيذ" class="primary">
+<article class="panel departments">
+<div class="panel-head"><h2>التنفيذ حسب الجهة</h2><span class="panel-sub">تفاصيل تنفيذ <b></b></span></div>
+<div class="dept-table">
+<div class="dept-header"><div>الفرع / القسم / المكتب</div><div style="text-align:center">الإجمالي</div><div style="text-align:center">المنجزة</div><div style="text-align:center">غير المكتملة</div><div style="text-align:center">نسبة التنفيذ</div></div>
 
-  <section class="stats" aria-label="المؤشرات الرئيسية">
-    <article class="kpi" style="--acc:#34799f"><div class="kpi-top"><span>إجمالي المهام المسجلة</span><span class="kpi-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span></div><div class="kpi-number">348</div><div class="kpi-note">جميع مصادر التكليف</div></article>
-    <article class="kpi" style="--acc:#526e91"><div class="kpi-top"><span>المهام المخططة</span><span class="kpi-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg></span></div><div class="kpi-number">234</div><div class="kpi-note">67.2% من إجمالي المهام</div></article>
-    <article class="kpi" style="--acc:#ac772d"><div class="kpi-top"><span>الطارئة والإضافية</span><span class="kpi-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2 5 13h6l-1 9 9-12h-6z"/></svg></span></div><div class="kpi-number">114</div><div class="kpi-note">32.8% من إجمالي المهام</div></article>
-    <article class="kpi" style="--acc:#167b73"><div class="kpi-top"><span>المهام المنجزة</span><span class="kpi-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m4 12 5 5L20 6"/></svg></span></div><div class="kpi-number">300</div><div class="kpi-note">186 مخططة + 114 طارئة</div></article>
-    <article class="kpi kpi-main" style="--acc:#167b73"><div class="kpi-top"><span>نسبة الإنجاز العام</span><span class="kpi-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 17 10 11l4 4 6-7M15 8h5v5"/></svg></span></div><div class="kpi-number">86.2%</div><div class="kpi-note">300 مهمة من أصل 348</div></article>
-  </section>
 
-  <section class="primary" aria-label="تفاصيل التنفيذ">
-    <article class="panel departments">
-      <div class="panel-head"><h2>التنفيذ حسب الجهة</h2><span class="panel-sub">تفاصيل تنفيذ <b>234 مهمة مخططة</b></span></div>
-      <div class="dept-table">
-        <div class="dept-header"><div>الفرع / القسم / المكتب</div><div style="text-align:center">الإجمالي</div><div style="text-align:center">المنجزة</div><div style="text-align:center">غير المكتملة</div><div style="text-align:center">نسبة التنفيذ</div></div>
-        <div class="dept-row"><div class="dept-name">قسم التخطيط والتقييم</div><div class="numeric">65</div><div class="numeric">49</div><div class="numeric pending">16</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:75%;background:#36799e"></span></span><b class="pct">75%</b></div></div>
-        <div class="dept-row"><div class="dept-name">قسم الشكاوي العسكرية</div><div class="numeric">54</div><div class="numeric">54</div><div class="numeric quiet">0</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:100%;background:#167b73"></span></span><b class="pct">100%</b></div></div>
-        <div class="dept-row"><div class="dept-name">قسم الشؤون الإدارية</div><div class="numeric">18</div><div class="numeric">18</div><div class="numeric quiet">0</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:100%;background:#167b73"></span></span><b class="pct">100%</b></div></div>
-        <div class="dept-row"><div class="dept-name">المكتب القانوني</div><div class="numeric">36</div><div class="numeric">21</div><div class="numeric pending">15</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:58%;background:#ac772d"></span></span><b class="pct">58%</b></div></div>
-        <div class="dept-row"><div class="dept-name">اللجنة الشمالية</div><div class="numeric">24</div><div class="numeric">11</div><div class="numeric pending">13</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:46%;background:#ac772d"></span></span><b class="pct">46%</b></div></div>
-        <div class="dept-row"><div class="dept-name">اللجنة الجنوبية</div><div class="numeric">21</div><div class="numeric">17</div><div class="numeric pending">4</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:81%;background:#36799e"></span></span><b class="pct">81%</b></div></div>
-        <div class="dept-row"><div class="dept-name">اللجنة الوسطى</div><div class="numeric">16</div><div class="numeric">16</div><div class="numeric quiet">0</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:100%;background:#167b73"></span></span><b class="pct">100%</b></div></div>
-        <div class="dept-row"><div class="dept-name">الديوان</div><div class="numeric">0</div><div class="numeric">0</div><div class="numeric quiet">0</div><div class="progress-cell"><span class="progress-track"><span class="progress-fill" style="width:0%;background:#7b8b95"></span></span><b class="pct">—</b></div></div>
-      </div>
-      <div class="dept-foot"><span><span class="small-dot"></span>الديوان: لا توجد مهام مسجلة، لذا لا تنطبق نسبة الإنجاز.</span><span class="small-col">الإجمالي: <b>234</b> | المنجزة: <b style="color:var(--green)">186</b></span></div>
-    </article>
-    <div class="right-stack">
-      <article class="panel"><div class="panel-head"><h2>حالة تنفيذ المهام المخططة</h2><span class="section-tag">من أصل 234 مهمة</span></div>
-        <div class="donut-body"><div class="donut-wrap"><svg class="donut" viewBox="0 0 120 120" role="img" aria-label="إنجاز المهام المخططة 79.5 بالمئة">
-          <circle cx="60" cy="60" r="47" fill="none" stroke="#e1e9ed" stroke-width="13" />
-          <circle cx="60" cy="60" r="47" fill="none" stroke="#167b73" stroke-width="13" stroke-dasharray="234.733 60.576" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="47" fill="none" stroke="#36799e" stroke-width="13" stroke-dasharray="22.716 272.594" stroke-dashoffset="-234.733" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="47" fill="none" stroke="#ac772d" stroke-width="13" stroke-dasharray="32.812 262.498" stroke-dashoffset="-257.449" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="47" fill="none" stroke="#a8525d" stroke-width="13" stroke-dasharray="5.048 290.262" stroke-dashoffset="-290.262" transform="rotate(-90 60 60)"/>
-          <text x="60" y="66" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#19384e" direction="ltr">79.5%</text>
-        </svg></div>
-        <div class="status-list">
-          <div class="status-item"><span class="status-dot" style="background:#167b73"></span><span class="status-label">منجزة بالكامل</span><b class="status-count">186</b><span class="status-percent">79.5%</span></div>
-          <div class="status-item"><span class="status-dot" style="background:#36799e"></span><span class="status-label">قيد التنفيذ</span><b class="status-count">18</b><span class="status-percent">7.7%</span></div>
-          <div class="status-item"><span class="status-dot" style="background:#ac772d"></span><span class="status-label">مؤجلة بمبرر</span><b class="status-count">26</b><span class="status-percent">11.1%</span></div>
-          <div class="status-item"><span class="status-dot" style="background:#a8525d"></span><span class="status-label">ملغاة / غير منفذة</span><b class="status-count">4</b><span class="status-percent">1.7%</span></div>
-        </div></div>
-      </article>
-      <article class="panel"><div class="panel-head"><h2>الأداء حسب مصدر المهمة</h2><span class="panel-sub">المنجزة / المسجلة</span></div>
-        <div class="sources-body"><div class="source-item"><span class="source-name">المهام المخططة <small>186 / 234</small></span><span class="source-track"><span style="width:79.5%;background:#36799e"></span></span><b class="source-percent">79.5%</b></div>
-          <div class="source-item"><span class="source-name">الطارئة والإضافية <small>114 / 114</small></span><span class="source-track"><span style="width:100%;background:#167b73"></span></span><b class="source-percent">100%</b></div>
-          <div class="sources-foot">نسبة الإنجاز العام: <span style="direction:ltr;display:inline-block">300 / 348 = <b style="color:var(--green)">86.2%</b></span></div>
-        </div>
-      </article>
-    </div>
-  </section>
 
-  <section class="secondary" aria-label="الأولويات والخلاصة التنفيذية">
-    <article class="panel priorities"><div class="panel-head"><h2>توزيع أولويات المهام المخططة</h2><span class="panel-sub">حصة كل فئة من 234 مهمة</span></div>
-      <div class="prio-header"><div>الأولوية</div><div style="text-align:center">العدد</div><div style="text-align:center">التوزيع النسبي</div><div style="text-align:center">النسبة</div><div style="text-align:center">التصنيف</div></div>
-      <div class="prio-row"><div class="prio-label"><span class="priority-dot" style="background:#a8525d"></span><span>عالية جداً (عاجل)</span></div><div class="prio-count">42</div><div class="prio-bar"><span style="width:17.9%;background:#a8525d"></span></div><div class="prio-pct">17.9%</div><div class="prio-note">حرجة</div></div>
-      <div class="prio-row"><div class="prio-label"><span class="priority-dot" style="background:#ac772d"></span><span>عالية / عاجلة</span></div><div class="prio-count">48</div><div class="prio-bar"><span style="width:20.5%;background:#ac772d"></span></div><div class="prio-pct">20.5%</div><div class="prio-note">مرتفعة</div></div>
-      <div class="prio-row"><div class="prio-label"><span class="priority-dot" style="background:#547d9c"></span><span>متوسطة</span></div><div class="prio-count">20</div><div class="prio-bar"><span style="width:8.5%;background:#547d9c"></span></div><div class="prio-pct">8.5%</div><div class="prio-note">متوسطة</div></div>
-      <div class="prio-row"><div class="prio-label"><span class="priority-dot" style="background:#167b73"></span><span>عادية</span></div><div class="prio-count">106</div><div class="prio-bar"><span style="width:45.3%;background:#167b73"></span></div><div class="prio-pct">45.3%</div><div class="prio-note">اعتيادية</div></div>
-      <div class="prio-row"><div class="prio-label"><span class="priority-dot" style="background:#788996"></span><span>غير محددة</span></div><div class="prio-count">18</div><div class="prio-bar"><span style="width:7.7%;background:#788996"></span></div><div class="prio-pct">7.7%</div><div class="prio-note">تحتاج استكمال</div></div>
-      <div class="prio-foot">تُحسب النسب هنا من إجمالي المهام المخططة، وليس من إجمالي المهام المسجلة.</div>
-    </article>
-    <article class="panel insights"><div class="panel-head"><h2>الخلاصة التنفيذية ومؤشرات المتابعة</h2><span class="section-tag">قراءة سريعة</span></div>
-      <div class="insights-main">
-        <div class="summary"><div class="summary-number">91.7%</div><div class="summary-copy"><strong>44 من أصل 48 مهمة مخططة غير مكتملة</strong> تقع في ثلاث جهات: قسم التخطيط والتقييم (16)، المكتب القانوني (15)، واللجنة الشمالية (13).</div></div>
-        <div class="insight-metrics"><div class="metric"><b>20.5%</b><span class="metric-label">معدل عدم اكتمال المخطط</span></div><div class="metric"><b>114/114</b><span class="metric-label">إنجاز المهام الطارئة</span></div><div class="metric"><b>0</b><span class="metric-label">صفوف الخطة المخفية</span></div></div>
-        <div class="insights-foot"><span>المهام غير المكتملة: <strong>18 قيد التنفيذ + 26 مؤجلة + 4 ملغاة/غير منفذة</strong></span><span>عدد الجهات: <strong>8</strong></span></div>
-        <div class="action-strip"><b>إجراءات المتابعة بحسب الحالة:</b> إغلاق وتوثيق (186) <span class="action-sep">|</span> متابعة (18) <span class="action-sep">|</span> إعادة جدولة (26) <span class="action-sep">|</span> تحليل السبب (4)</div>
-      </div>
-    </article>
-  </section>
 
-  <footer class="footer"><div><b>ملاحظة منهجية:</b> نسبة الإنجاز العام من جميع المهام (348)، فيما نسب الحالة والأولويات والتنفيذ حسب الجهة من المهام المخططة فقط (234).</div><div class="footer-left">MONTHLY PERFORMANCE REPORT &nbsp; • &nbsp; AUG 2026 &nbsp; | &nbsp; 01 / 01</div></footer>
+
+
+
+
+</div>
+<div class="dept-foot"><span><span class="small-dot"></span>الديوان: لا توجد مهام مسجلة، لذا لا تنطبق نسبة الإنجاز.</span><span class="small-col"></span></div>
+</article>
+<div class="right-stack">
+<article class="panel"><div class="panel-head"><h2>حالة تنفيذ المهام المخططة</h2><span class="section-tag"></span></div>
+<div class="donut-body"><div class="donut-wrap"><svg aria-label="إنجاز المهام المخططة 79.5 بالمئة" class="donut" role="img" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="47" stroke="#e1e9ed" stroke-width="13"></circle>
+
+
+
+
+<text direction="ltr" fill="#19384e" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="bold" text-anchor="middle" x="60" y="66"></text>
+</svg></div>
+<div class="status-list">
+
+
+
+
+</div></div>
+</article>
+<article class="panel"><div class="panel-head"><h2>الأداء حسب مصدر المهمة</h2><span class="panel-sub">المنجزة / المسجلة</span></div>
+<div class="sources-body"><div class="source-item"><span class="source-name">المهام المخططة <small></small></span><span class="source-track"><span style="width:0%;background:#36799e"></span></span><b class="source-percent"></b></div>
+<div class="source-item"><span class="source-name">الطارئة والإضافية <small></small></span><span class="source-track"><span style="width:0%;background:#167b73"></span></span><b class="source-percent"></b></div>
+<div class="sources-foot">نسبة الإنجاز العام: <span style="direction:ltr;display:inline-block"></span></div>
+</div>
+</article>
+</div>
+</section>
+<section aria-label="الأولويات والخلاصة التنفيذية" class="secondary">
+<article class="panel priorities"><div class="panel-head"><h2>توزيع أولويات المهام المخططة</h2><span class="panel-sub"></span></div>
+<div class="prio-header"><div>الأولوية</div><div style="text-align:center">العدد</div><div style="text-align:center">التوزيع النسبي</div><div style="text-align:center">النسبة</div><div style="text-align:center">التصنيف</div></div>
+
+
+
+
+
+<div class="prio-foot">تُحسب النسب هنا من إجمالي المهام المخططة، وليس من إجمالي المهام المسجلة.</div>
+</article>
+<article class="panel insights"><div class="panel-head"><h2>الخلاصة التنفيذية ومؤشرات المتابعة</h2><span class="section-tag">قراءة سريعة</span></div>
+<div class="insights-main">
+<div class="summary"><div class="summary-number"></div><div class="summary-copy"></div></div>
+<div class="insight-metrics"><div class="metric"><b></b><span class="metric-label">معدل عدم اكتمال المخطط</span></div><div class="metric"><b></b><span class="metric-label">إنجاز المهام الطارئة</span></div><div class="metric"><b></b><span class="metric-label">صفوف الخطة المخفية</span></div></div>
+<div class="insights-foot"><span></span><span></span></div>
+<div class="action-strip"></div>
+</div>
+</article>
+</section>
+<footer class="footer"><div><b>ملاحظة منهجية: </b></div><div class="footer-left"></div></footer>
 </main>
-      </div></div>
-    </section>
-  </div>
+       </div>
+    </div>
+  </section>
+ </div>
+ <footer class="app-footer" role="contentinfo"><span class="footer-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg> معالجة محلية للملف داخل المتصفح</span><span>الورقة المعتمدة: <strong>التقرير النهائي الشهري</strong> · إخراج A4 أفقي</span></footer>
 </div>
 <script type="application/json" id="embeddedReport"></script>
 <script>
@@ -504,15 +523,7 @@ async function extractReport(file){
  }
  return parseReportCells(cells,wb.documentElement.getAttribute('date1904')==='1'||xmlNodes(wb,'workbookPr').some(x=>x.getAttribute('date1904')==='1'),file.name);
 }
-const DEMO={filename:'بيانات القالب التجريبية',sheet:SHEET_NAME,reportName:'التقرير النهائي الشهري لخطة العمل',organization:'إدارة التدريب العسكري - فرع الرقابة والتفتيش',monthAr:'آب 2026',date:'17/09/2026',
-  planned:234,emergency:114,total:348,overallPct:300/348,plannedPct:186/234,unfinished:48,hidden:0,departmentCount:8,
-  priorities:[['عالية جداً (عاجل)',42,'حرجة'],['عالية / عاجلة',48,'مرتفعة'],['متوسطة',20,'متوسطة'],['عادية',106,'اعتيادية'],['غير محددة',18,'تحتاج استكمال']].map(([label,count,className])=>({label,count,className,sourcePercent:count/348})),
-  statuses:[['منجزة بالكامل',186,'إغلاق وتوثيق'],['قيد التنفيذ',18,'متابعة أسبوعية'],['مؤجلة بمبرر',26,'إعادة جدولة'],['ملغاة / غير منفذة',4,'تحليل السبب'],['غير مصنفة',0,'تدقيق فوري']].map(([label,count,action])=>({label,count,action,sourcePercent:count/234})),
-  sources:[['المخططة',234,186],['الطارئة / الإضافية',114,114],['الإجمالي',348,300]].map(([label,total,done])=>({label,total,done,sourcePercent:ratio(done,total)})),
-  departments:[['قسم التخطيط والتقييم',65,49,16],['قسم الشكاوي العسكرية',54,54,0],['قسم الشؤون الإدارية',18,18,0],['المكتب القانوني',36,21,15],['اللجنة الشمالية',24,11,13],['اللجنة الجنوبية',21,17,4],['اللجنة الوسطى',16,16,0],['الديوان',0,0,0]].map(([name,total,done,pending])=>({name,total,done,pending,sourcePercent:ratio(done,total)})),
-  operationalDeviation:48/234,emergencyShare:114/348,
-  rawSummary:'بلغ إجمالي المهام المسجلة 348 مهمة، بواقع 234 مهمة مخططة و114 مهمة طارئة أو إضافية. أُنجزت 186 مهمة بالكامل بنسبة 79.5%، بينما بلغت نسبة المهام قيد التنفيذ أو المؤجلة أو غير المنفذة 20.5%. ويبلغ نسبة الإنجاز العام 86.2%.',fromExcel:false};
-let activeModel=DEMO;
+let activeModel=null;
 function sum(items,key){return items.reduce((acc,item)=>acc+num(item[key]),0);}
 function validate(m){
  const w=[];
@@ -532,13 +543,13 @@ function validate(m){
 }
 function appendText(node,text,tag='span',cls=''){const n=document.createElement(tag);if(cls)n.className=cls;n.textContent=text;node.appendChild(n);return n;}
 function renderSource(m){
- textNode('#srcFilename',m.fromExcel?m.filename:'لم يُرفع بعد');
+ textNode('#srcFilename',m.filename);
  textNode('#srcSheet',SHEET_NAME);
- textNode('#srcMonth',m.monthAr+(m.fromExcel?'':' (توضيحي)'));
- textNode('#srcDate',m.date+(m.fromExcel?'':' (توضيحي)'));
- textNode('#srcMode',m.fromExcel?'مستخرجة من الورقة المحددة فقط':'مثال القالب الأصلي');
- textNode('#modePill',m.fromExcel?'تقرير Excel مُحمّل':'وضع تجريبي');
- el('watermark').classList.toggle('loaded',m.fromExcel);
+ textNode('#srcMonth',m.monthAr);
+ textNode('#srcDate',m.date);
+ textNode('#srcMode','مستخرجة من الورقة المحددة فقط');
+ textNode('#modePill','تم الاستيراد');
+ el('previewState').textContent='الملف محمّل • جاهز للطباعة';
  const stats=[['إجمالي المهام',int(m.total)],['المهام المخططة',int(m.planned)],['الطارئة والإضافية',int(m.emergency)],['الإنجاز العام',pct(m.overallPct)],['إنجاز المخطط',pct(m.plannedPct)],['غير المكتملة',int(m.unfinished)],['صفوف الخطة المخفية',int(m.hidden)],['عدد الجهات',int(m.departmentCount)],['الانحراف التشغيلي',pct(m.operationalDeviation)],['نسبة الطارئة',pct(m.emergencyShare)]];
  el('srcStats').replaceChildren(...stats.map(([label,val])=>{const box=document.createElement('div');box.className='src-stat';appendText(box,label,'label');appendText(box,val,'b');return box;}));
  function populate(id,rows){const node=el(id);node.replaceChildren(...rows.map(row=>{const tr=document.createElement('tr');row.forEach((item,i)=>appendText(tr,item,'td',i?'num':''));return tr;}));}
@@ -647,17 +658,51 @@ function renderPrint(m){
  const my=m.monthAr.match(/^(.*?)\s+(\d{4})$/);textNode('.footer-left','MONTHLY PERFORMANCE REPORT  •  '+(my?(months[my[1]]||my[1])+' '+my[2]:m.monthAr)+'  |  01 / 01');
  S('.page').setAttribute('aria-label',m.reportName+'، '+m.monthAr);
 }
-function renderAll(model){activeModel=model;const warnings=renderSource(model);renderPrint(model);
- el('saveBtn').disabled=!model.fromExcel;el('printBtn').disabled=!model.fromExcel;
- if(model.fromExcel){setStatus(warnings.length?'تم تحميل التقرير، مع ملاحظات في فحص الأرقام أسفل اللوحة.':'تم استخراج جميع الأقسام من «التقرير النهائي الشهري» وتحديث صفحة الطباعة.',''+(warnings.length?'warn':'ok'));}
- else setStatus('القالب يعرض بيانات توضيحية. ارفع Excel لإدراج القيم الحقيقية وتمكين الطباعة.','');
- requestAnimationFrame(fitStage);}
+function renderAll(model){
+ activeModel=model;
+ const warnings=renderSource(model);
+ renderPrint(model);
+ el('appShell').classList.add('has-data');
+ el('resetBtn').disabled=false;
+ el('saveBtn').disabled=false;
+ el('printBtn').disabled=false;
+ textNode('#uploadedName',model.filename);
+ textNode('#workflowState','اكتمل الاستيراد');
+ setStatus(warnings.length ? 'تم استيراد الملف بنجاح؛ راجع ملاحظات التحقق أدناه.' : 'تم استيراد بيانات الورقة وتحديث التقرير. يمكنك الآن الطباعة أو الحفظ.',warnings.length?'warn':'ok');
+ requestAnimationFrame(fitStage);
+}
+function clearReport(){
+ activeModel=null;
+ el('appShell').classList.remove('has-data');
+ document.title='منشئ التقرير النهائي الشهري | Excel إلى A4';
+ ['srcStats','srcStatuses','srcPriorities','srcDepartments','checks'].forEach(id=>el(id).replaceChildren());
+ ['srcMonth','srcDate','srcExcelSummary'].forEach(id=>textNode('#'+id,'—'));
+ textNode('#srcFilename','لم يُرفع ملف');
+ textNode('#srcSheet',SHEET_NAME);
+ textNode('#srcMode','بانتظار الملف');
+ textNode('#modePill','بانتظار Excel');
+ textNode('#previewState','بانتظار رفع الملف');
+ textNode('#uploadedName','لم يتم تحديد ملف بعد');
+ textNode('#workflowState','ابدأ برفع الملف');
+ textNode('#zoomLabel','—');
+ el('resetBtn').disabled=true;
+ el('saveBtn').disabled=true;
+ el('printBtn').disabled=true;
+ el('fileInput').value='';
+ setStatus('لم يتم استيراد أي بيانات بعد. ارفع ملف Excel لعرض النتيجة الفعلية.');
+}
 function setStatus(message,type=''){const box=el('statusBar');box.className='src-status '+type;box.textContent=message;}
-async function loadFile(file){if(!file)return;const drop=el('dropArea');drop.classList.add('busy');setStatus('جارٍ قراءة ورقة التقرير والتحقق من القيم المحفوظة…','');
- try{const m=await extractReport(file);renderAll(m);}catch(e){setStatus(e?.message||'فشل استيراد Excel.','error');}
- finally{drop.classList.remove('busy');el('fileInput').value='';}}
+async function loadFile(file){
+ if(!file)return;
+ const drop=el('dropArea');drop.classList.add('busy');el('fileProgress').hidden=false;
+ textNode('#workflowState','جارٍ قراءة الملف');
+ setStatus('جارٍ قراءة ورقة «'+SHEET_NAME+'» والتحقق من القيم المحفوظة…');
+ try{const model=await extractReport(file);renderAll(model);}
+ catch(e){setStatus(e?.message||'تعذر استيراد Excel.','error');textNode('#workflowState',activeModel?'آخر ملف ما زال معروضاً':'الاستيراد غير مكتمل');}
+ finally{drop.classList.remove('busy');el('fileProgress').hidden=true;el('fileInput').value='';}
+}
 function fitStage(){
- const viewer=el('previewScroll'),stage=el('paperStage'),paper=S('.page',stage);if(!viewer||!paper)return;
+ const viewer=el('previewScroll'),stage=el('paperStage'),paper=S('.page',stage);if(!viewer||!paper||!activeModel)return;
  const mode=el('zoomSelect').value;
  const allowedW=Math.max(250,viewer.clientWidth-35),allowedH=Math.max(200,viewer.clientHeight-30);
  const scale=mode==='fit'?Math.min(1,allowedW/paper.offsetWidth,allowedH/paper.offsetHeight):Number(mode);
@@ -681,14 +726,15 @@ for(const type of ['dragleave','drop'])drop.addEventListener(type,e=>{e.preventD
 drop.addEventListener('drop',e=>loadFile(e.dataTransfer?.files?.[0]));
 drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el('fileInput').click();}});
 el('zoomSelect').addEventListener('change',fitStage);
-el('resetBtn').addEventListener('click',()=>renderAll(DEMO));
+el('resetBtn').addEventListener('click',clearReport);
 el('saveBtn').addEventListener('click',saveHtml);
-el('printBtn').addEventListener('click',()=>{if(activeModel.fromExcel)window.print();});
+el('printBtn').addEventListener('click',()=>{if(activeModel)window.print();});
 window.addEventListener('resize',fitStage);
-if('ResizeObserver' in window){new ResizeObserver(fitStage).observe(el('previewScroll'));}
+if('ResizeObserver' in window){new ResizeObserver(()=>{if(activeModel)fitStage();}).observe(el('previewScroll'));}
+clearReport();
 const embedded=el('embeddedReport').textContent.trim();
-try{if(embedded){const parsed=JSON.parse(embedded);if(parsed?.sheet===SHEET_NAME)renderAll(parsed);else renderAll(DEMO);}else renderAll(DEMO);}
-catch(e){renderAll(DEMO);setStatus('تعذر استعادة البيانات المرفقة؛ يمكنك إعادة رفع ملف Excel.','warn');}
+if(embedded){try{const saved=JSON.parse(embedded);if(saved?.sheet===SHEET_NAME && saved.fromExcel)renderAll(saved);else setStatus('البيانات المحفوظة لا تطابق ورقة التقرير المطلوبة.','warn');}
+ catch(e){setStatus('تعذر قراءة البيانات المحفوظة؛ ارفع ملف Excel مجدداً.','warn');}}
 
 </script>
 </body>
