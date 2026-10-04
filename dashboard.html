@@ -130,7 +130,8 @@
   .status-percent { direction:ltr; text-align:left; font-size:7pt; color:#6b7f8d; }
   .sources-body { padding:1.2mm 3mm .4mm; }
   .source-item { display:grid; grid-template-columns:38mm 1fr 14mm; gap:2mm; align-items:center; height:7.3mm; }
-  .source-name { color:#344d5e; font-size:7.9pt; font-weight:800; white-space:nowrap; }
+  .source-name { color:#344d5e; font-size:7.9pt; font-weight:800; white-space:nowrap;
+                 display:flex; align-items:baseline; justify-content:space-between; gap:2mm; }
   .source-name small { color:#718594; font-size:6.9pt; display:inline-block; direction:ltr; }
   .source-track { height:2.4mm; background:#e3eaed; border-radius:.6mm; overflow:hidden; }
   .source-track span { height:100%; display:block; }
@@ -177,9 +178,10 @@
 .page .primary,.page .secondary { direction:ltr; }
 .page .stats { direction:rtl; }
 .page .stats>*,.page .primary>*,.page .secondary>* { direction:rtl; }
-.page .dept-header,.page .dept-row,.page .prio-header,.page .prio-row,.page .source-item,.page .donut-body { direction:ltr; }
+/* جداول الجهات والأولويات والمصادر RTL: عمود الاسم أقصى اليمين وآخر عمود رقمي أقصى اليسار؛ الحلقة ووسيلة إيضاحها تبقى كما في القالب */
+.page .dept-header,.page .dept-row,.page .prio-header,.page .prio-row,.page .source-item { direction:rtl; }
+.page .donut-body { direction:ltr; }
 .page .dept-name,.page .prio-label,.page .source-name,.page .status-list { direction:rtl; text-align:right; }
-.page .prio-label { justify-content:flex-end; }
 .page .status-list.has-extra-status { gap:0; }
 .page .status-list.has-extra-status .status-item {min-height:6.9mm;font-size:6.8pt;}
 
