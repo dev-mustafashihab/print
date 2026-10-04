@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="docRoot">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,27 +11,54 @@
   جميع الأفكار والبيانات والوحدات الأصلية محفوظة.
 -->
 <style>
-  @page { size: A4 landscape; margin: 0; }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; direction:rtl; }
   :root {
     --navy:#19384e; --navy-dark:#122d42; --blue:#36799e;
     --green:#167b73; --amber:#ac772d; --red:#a8525d;
     --slate:#5c7180; --line:#d7e0e6; --wash:#f2f6f7;
+    --page-w:297mm; --page-h:210mm;
   }
-  body { background:#e4e9ec; font-family:"Noto Sans Arabic",Tahoma,Arial,sans-serif; color:#1e3545;
+  /* ===== اتجاه الورقة: طولي أو أفقي (يُطبَّق على CSS والطباعة) ===== */
+  @page { size: var(--page-w) var(--page-h); margin:0; }
+  html.page-portrait, body.page-portrait { --page-w:210mm; --page-h:297mm; }
+  body.page-portrait .page { width:210mm; height:297mm; }
+  body.page-portrait .stats { grid-template-columns:repeat(auto-fit,minmax(27mm,1fr)); }
+  body.page-portrait .primary { grid-template-columns:117mm 71mm; }
+  body.page-portrait .secondary { grid-template-columns:repeat(auto-fit,minmax(60mm,1fr)); }
+  body.page-portrait .dept-header,
+  body.page-portrait .dept-row { grid-template-columns:52mm 1fr 1fr 1fr 1.3fr; }
+  body.page-portrait .prio-header,
+  body.page-portrait .prio-row { grid-template-columns:38mm 11mm 1fr 13mm 19mm; }
+  body.page-portrait .right-stack { grid-template-rows:44mm 29mm; }
+  body.page-portrait .donut-body { grid-template-columns:30mm 1fr; gap:1.8mm; padding:0 2.2mm; }
+  body.page-portrait .donut-wrap { width:30mm; }
+  body.page-portrait .donut { width:27.5mm; height:27.5mm; }
+  body.page-portrait .donut-core { top:12.5mm; }
+  body { background:#e4e9ec; font-family:"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif; color:#1e3545;
          -webkit-print-color-adjust:exact; print-color-adjust:exact; font-size:9pt; }
   .page { width:297mm; height:210mm; margin:10mm auto; padding:8mm; overflow:hidden; background:#fff;
           display:grid; grid-template-rows:21mm 27mm 79mm 54mm 5mm; gap:2mm;
           box-shadow:0 6px 32px rgba(10,24,32,.18); }
-  .header { position:relative; padding:0 5.2mm; border:1px solid #244e62; border-right:1.4mm solid var(--green);
+  .header { position:relative; padding:0 5.2mm; border:1px solid rgba(255,255,255,.16); border-right:1.4mm solid var(--header-accent);
             display:flex; align-items:center; justify-content:space-between; gap:4mm;
-            background:var(--navy-dark); color:white; border-radius:1.5mm; }
+            background:var(--header-bg); color:white; border-radius:1.5mm; }
+  .page .header { --header-bg:#06332e; --header-accent:#167b73; }
   .head-main { display:flex; align-items:center; min-width:0; gap:3.3mm; }
-  .mark { flex:none; width:11mm;height:11mm; border:1px solid #9ab8c3; border-radius:1.5mm;
-          padding:2.5mm; display:grid; grid-template-columns:1fr 1fr; gap:1mm; }
-  .mark span { background:#61b7ad; border-radius:.35mm; }
-  .mark span:nth-child(2) { opacity:.48; }.mark span:nth-child(3) { opacity:.74; }
+  .emblem { flex:none; width:13mm; height:13mm; object-fit:contain; }
+  .head-divider { flex:none; width:.5mm; height:12.5mm; background:rgba(255,255,255,.35); border-radius:.25mm; }
+  /* النمط الذهبي: نصوص وعناصر داكنة لضمان القراءة على الخلفية الذهبية الفاتحة */
+  body.header-gold .page .header { --header-bg:#b9a779; --header-accent:#6b5d33; }
+  body.header-gold .header { color:#2f2a1c; }
+  body.header-gold .header h1 { color:#241e0e; }
+  body.header-gold .header .eyebrow { color:#453b22; }
+  body.header-gold .header .eyebrow .slash { color:#6b5d33; }
+  body.header-gold .header .head-sub { color:#4f442a; }
+  body.header-gold .header .meta-item { background:#a3915e; border-color:#8a7a4e; }
+  body.header-gold .header .meta-label { color:#3a3120; }
+  body.header-gold .header .meta-value { color:#1d1808; }
+  body.header-gold .head-divider { background:rgba(31,26,10,.4); }
+  body.header-gold .emblem { filter:brightness(0); opacity:.8; }
   .eyebrow { font-size:7.2pt; font-weight:700; line-height:1.42; color:#bdd4de; }
   .eyebrow .slash { color:#75cac0; padding:0 1mm; }
   h1 { font-family:"Noto Kufi Arabic","Noto Sans Arabic",sans-serif; font-size:14.6pt;
@@ -46,9 +73,9 @@
   .kpi { min-width:0; padding:2.5mm 3mm 2.1mm; border:1px solid var(--line); border-top:1mm solid var(--acc);
          background:#fff; border-radius:1.15mm; display:flex; flex-direction:column; justify-content:space-between; }
   .kpi-main { background:#f1f8f6; border-color:#c6dcd6; border-top-color:var(--green); }
-  .kpi-top { font-size:8pt; font-weight:800; color:#425b6a; line-height:1.35; display:flex; justify-content:space-between; align-items:center;gap:2mm; white-space:nowrap; }
+  .kpi-top { font-size:8pt; font-weight:800; color:#425b6a; line-height:1.35; display:flex; justify-content:space-between; align-items:center;gap:2mm; white-space:nowrap; overflow:hidden; }
   .kpi-icon { color:var(--acc); width:5.5mm; height:5.5mm; flex:none; border:1px solid var(--acc);
-              border-radius:1mm; display:grid; place-items:center; }
+              border-radius:1mm; display:grid; place-items:center; overflow:hidden; }
   .icon { width:3.4mm; height:3.4mm; }
   .kpi-number { font-size:18pt; font-weight:800; line-height:1.13; color:var(--navy-dark); direction:ltr;text-align:right;font-variant-numeric:tabular-nums; }
   .kpi-main .kpi-number { color:#126e67; }
@@ -69,7 +96,7 @@
   .dept-header,.dept-row { display:grid; grid-template-columns:61mm 20mm 20mm 23mm 1fr; align-items:center; }
   .dept-header { height:6.1mm; background:#eaf0f3; border-radius:.7mm; padding:0 1mm;
                  color:#3d5767; font-size:7.1pt; font-weight:800; }
-  .dept-row { height:7.05mm; border-bottom:1px solid #e6edef; padding:0 1mm; font-size:8.1pt; }
+  .dept-row { height:var(--dept-row-h,7.05mm); border-bottom:1px solid #e6edef; padding:0 1mm; font-size:var(--dept-row-fs,8.1pt); }
   .dept-row:nth-child(odd) { background:#f9fbfc; }
   .dept-name { white-space:nowrap; font-weight:800; color:#263e50; }
   .numeric { text-align:center; direction:ltr; font-variant-numeric:tabular-nums; font-weight:800; }
@@ -86,19 +113,19 @@
   .right-stack .panel-head { height:8mm; padding:0 3mm; }
   .right-stack h2 { font-size:8.5pt; }
   .donut-body { height:37.5mm; display:grid; grid-template-columns:36mm 1fr; align-items:center; gap:2.5mm; padding:0 3mm; }
-  .donut-wrap { width:36mm;height:37.5mm;display:flex;flex-direction:column;justify-content:center;align-items:center; }
+  .donut-wrap { width:36mm;height:37.5mm;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative; }
   .donut { width:33.5mm;height:33.5mm;display:block;flex:none; }
   .donut-caption { font-size:6.7pt;color:#657b87;line-height:1.25;text-align:center;white-space:nowrap; }
-  .donut-core { position:absolute;top:12.4mm;left:0;width:36mm;height:12mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;pointer-events:none; }
+  .donut-core { position:absolute;top:12.4mm;left:0;right:0;width:100%;height:12mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;pointer-events:none; }
   .donut-core b { display:block;direction:ltr;font-size:12pt;font-weight:800;line-height:1.3;color:#19384e; }
   .donut-core small { display:block;font-size:6.7pt;color:#657b87;line-height:1.4;white-space:nowrap; }
   .donut-number { font-family:"Noto Sans Arabic",sans-serif; font-size:19px; font-weight:800; text-anchor:middle; direction:ltr; }
   .donut-sub { font-family:"Noto Sans Arabic",sans-serif; font-size:7.2px; text-anchor:middle; fill:#657b87; }
   .status-list { display:grid; gap:.7mm; }
-  .status-item { display:grid; grid-template-columns:2mm 1fr 9mm 11mm; align-items:center; gap:1mm;
+  .status-item { display:grid; grid-template-columns:2mm minmax(0,1fr) 9mm 11mm; align-items:center; gap:1mm;
                  min-height:7.6mm; border-bottom:1px solid #ebeff1; font-size:7.4pt; }
   .status-dot,.priority-dot { width:1.7mm; height:1.7mm; border-radius:50%; display:block; }
-  .status-label { white-space:nowrap; color:#405a69; }
+  .status-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#405a69; }
   .status-count { direction:ltr; text-align:center; font-weight:800; font-size:8pt; }
   .status-percent { direction:ltr; text-align:left; font-size:7pt; color:#6b7f8d; }
   .sources-body { padding:1.2mm 3mm .4mm; }
@@ -140,14 +167,15 @@
   .action-strip b { color:#25495c; }.action-sep { color:#9aafbb; padding:0 .4mm; }
   .footer { border-top:1px solid #cbd8de; display:flex; align-items:center; justify-content:space-between; gap:3mm;
             color:#5b7180; font-size:6.75pt; white-space:nowrap; }
-  .footer b { color:#284b5c; }.footer-left { color:#6c8390; font-size:6.4pt; direction:ltr; }
+  .footer b { color:#284b5c; }
   @media print { html, body { background:white !important; } .page { margin:0; box-shadow:none; }
     .header,.kpi,.panel,.progress-fill,.prio-bar span,.status-dot,.priority-dot { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
   @media screen and (max-width:980px) { body { overflow-x:auto; } .page { margin:8px auto; } }
 
-/* ضبط اتجاه ترتيب أعمدة لوحة الطباعة وفق معاينة القالب المعتمد */
-.page .stats,.page .primary,.page .secondary { direction:ltr; }
+/* بطاقات المؤشرات تُرتَّب من اليمين إلى اليسار (الإجمالي أولاً من اليمين ونسبة الإنجاز أخيراً)؛ بقية اللوحات على ترتيب القالب المعتمد */
+.page .primary,.page .secondary { direction:ltr; }
+.page .stats { direction:rtl; }
 .page .stats>*,.page .primary>*,.page .secondary>* { direction:rtl; }
 .page .dept-header,.page .dept-row,.page .prio-header,.page .prio-row,.page .source-item,.page .donut-body { direction:ltr; }
 .page .dept-name,.page .prio-label,.page .source-name,.page .status-list { direction:rtl; text-align:right; }
@@ -155,7 +183,38 @@
 .page .status-list.has-extra-status { gap:0; }
 .page .status-list.has-extra-status .status-item {min-height:6.9mm;font-size:6.8pt;}
 
-/* ========== تطبيق الاستيراد - معزول عن القالب المطبعي ========== */
+/* ===== ورقة طولية: إعادة توزيع الشبكات على 210×297 ===== */
+body.page-portrait .page { grid-template-rows:20mm 37mm 96mm 78mm 15mm; }
+body.page-portrait .kpi { padding:2mm 2.6mm 1.8mm; }
+body.page-portrait .kpi-number { font-size:14.5pt; }
+body.page-portrait .kpi-note { font-size:6.6pt; }
+body.page-portrait .kpi-icon { width:4.8mm; height:4.8mm; }
+body.page-portrait .departments { height:96mm; }
+body.page-portrait .dept-row { height:var(--dept-row-h-p,9.4mm); font-size:var(--dept-row-fs-p,8pt); }
+body.page-portrait .dept-header { height:6.4mm; }
+body.page-portrait .right-stack { grid-template-rows:51mm 41mm; gap:3.5mm; }
+body.page-portrait .donut-body { height:43.5mm; padding:0 2.5mm; }
+body.page-portrait .donut-wrap { height:43.5mm; }
+body.page-portrait .status-item { min-height:8.6mm; font-size:7.6pt; }
+body.page-portrait .source-item { height:9.3mm; }
+body.page-portrait .priorities,
+body.page-portrait .insights { height:78mm; }
+body.page-portrait .prio-row { height:8.3mm; font-size:8pt; }
+body.page-portrait .prio-foot { padding:2mm 3.5mm 0; }
+body.page-portrait .action-strip { font-size:6.2pt; flex-wrap:wrap; white-space:normal; }
+body.page-portrait .insights-main { padding:2mm 2.2mm 1mm; }
+body.page-portrait .panel { overflow:hidden; }
+body.page-portrait .kpi-top { font-size:7pt; gap:1.2mm; padding:0; }
+body.page-portrait .kpi-top>span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+body.page-portrait .status-label { font-size:6.6pt; }
+body.page-portrait .kpi { overflow:hidden; }
+body.page-portrait .status-item { grid-template-columns:2mm minmax(0,1fr) 8mm 10mm; font-size:7pt; }
+body.page-portrait .summary { min-height:14mm; }
+body.page-portrait .summary-number { font-size:15pt; }
+body.page-portrait .metric b { font-size:13.5pt; }
+/* الورقة الطولية تُعرض داخل إطار أوسع في المعاينة */
+
+/* ===== تطبيق الاستيراد - معزول عن القالب المطبعي ========== */
 :root {--ui-navy:#173449;--ui-deep:#10283b;--ui-teal:#147e76;--ui-blue:#397997;--ui-muted:#667f90;--ui-line:#dce7ec;--ui-canvas:#f2f5f8;}
 html,body{min-width:0;}
 body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
@@ -227,11 +286,21 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
 .src-tabular td.num{text-align:center;direction:ltr;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:800;}.src-footnote{font-size:10px;color:#708796;margin:9px 0 0;line-height:1.85;}
 .src-original-text{color:#385b67;background:#f4f9fa;border-right:3px solid #82b7ae;border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.95;margin:0;}
 .src-warning{border:1px solid #eed3ab;background:#fffbf2;border-radius:7px;padding:10px;margin-top:11px;color:#815e30;font-size:10.5px;line-height:1.8;}.src-warning strong{display:block;}
+.src-warning.critical{border-color:#e0a49a;background:#fdf1ef;color:#8f3b30;}
+.src-warning.critical b{color:#8f3b30;}
 .preview-pane{display:flex;flex-direction:column;min-width:0;min-height:0;background:#e9f0f4;}
 .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-bottom:1px solid #dce6eb;padding:13px 21px;min-height:58px;flex:none;}
 .preview-toolbar-copy{display:flex;flex-direction:column;gap:3px;}.preview-toolbar strong{color:#29495a;font-size:12.5px;}.preview-toolbar small{font-size:10px;color:#718795;}
 .preview-tools{display:flex;align-items:center;gap:9px;color:#587486;font-size:10px;white-space:nowrap;}
 .preview-select{border:1px solid #d9e5ec;border-radius:7px;color:#385e70;font:800 10px 'Noto Sans Arabic',Tahoma,sans-serif;background:#fff;padding:7px;max-width:145px;}
+.tools-divider{width:1px;align-self:stretch;min-height:22px;background:#e0e9ee;}
+.center-check{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:800;color:#385e70;user-select:none;}
+.center-check input{appearance:none;width:15px;height:15px;flex:none;border:1px solid #c4d6de;border-radius:4px;background:#fff;cursor:pointer;position:relative;margin:0;}
+.center-check input:checked{background:#1b9384;border-color:#1b9384;}
+.center-check input:checked:after{content:'';position:absolute;inset:0;background:no-repeat center/9px 7px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath d='M1 5l3.5 3.5L11 1.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");}
+.center-check input:focus-visible{outline:3px solid #81d1c8;outline-offset:2px;}
+.preview-scroll.is-centered{justify-content:center!important;}
+.preview-scroll.is-left{justify-content:flex-start!important;}
 .preview-scroll{position:relative;flex:1;min-width:0;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:21px 18px;}
 .paper-stage{position:relative;flex:none;}.paper-stage .page{margin:0;position:absolute;top:0;right:0;transform-origin:top right;box-shadow:0 8px 28px rgba(25,55,72,.19);}
 .app-shell:not(.has-data) .paper-stage{display:none;}.app-shell:not(.has-data) .preview-tools{opacity:.45;pointer-events:none;}
@@ -249,12 +318,13 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
 @media(max-width:900px){body{overflow:auto}.app-shell{height:auto;min-height:100dvh;grid-template-rows:auto auto auto auto;}.app-header{flex-wrap:wrap;}.app-actions{width:100%;justify-content:flex-start;}.app-workspace{display:flex;flex-direction:column;min-height:0;}.source-pane{overflow:visible;padding:16px;order:0;border-left:0;}.preview-pane{order:1;min-height:440px;}.preview-scroll{min-height:400px;padding:16px;}.app-footer{flex-wrap:wrap;}.src-card{max-width:none;}}
 @media(max-width:580px){.app-header{padding:14px 14px 13px;}.brand-mark{width:41px;height:41px;padding:9px;border-radius:10px;}.app-header-brand h1{font-size:13px;}.app-header-brand p{font-size:10px}.header-eyebrow{font-size:9px}.app-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}.ui-button{font-size:10px;white-space:normal;padding:9px 5px;min-height:42px;line-height:1.55;}.ui-button svg{display:none}.workflow-strip{padding:10px 14px;flex-wrap:wrap;}.workflow-list{width:100%;justify-content:space-between;gap:3px;}.workflow-item{font-size:9.5px;gap:3px;}.workflow-item .step-number{height:20px;width:20px;border-radius:6px;font-size:9px;}.workflow-state{font-size:9px;padding:5px 9px;}.source-pane{padding:13px 12px;}.src-card{padding:13px 12px;}.pane-title h2{font-size:14px;}.preview-toolbar{padding:12px;flex-wrap:wrap;}.preview-scroll{min-height:310px;padding:12px 10px;}.empty-preview{padding:24px 15px;}.empty-preview h2{font-size:16px;}.empty-page-icon{width:80px;height:90px;padding:12px;gap:6px;margin-bottom:16px;}.app-footer{font-size:9px;padding:12px;gap:5px;}}
 @media print{
- @page{size:A4 landscape;margin:0;}
- html,body{min-width:0!important;width:297mm!important;height:210mm!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;}
+ @page{size:var(--page-w) var(--page-h);margin:0;}
+ html,body{min-width:0!important;width:var(--page-w)!important;height:var(--page-h)!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;}
  .app-shell,.app-workspace,.preview-pane,.preview-scroll,.paper-stage{display:block!important;height:auto!important;min-height:0!important;width:auto!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;}
  .app-header,.workflow-strip,.app-footer,.source-pane,.preview-toolbar,.empty-preview{display:none!important;}
- .paper-stage .page{display:grid!important;position:static!important;top:auto!important;right:auto!important;transform:none!important;margin:0!important;box-shadow:none!important;width:297mm!important;height:210mm!important;break-inside:avoid!important;}
-}
+ .paper-stage .page{display:grid!important;position:static!important;top:auto!important;right:auto!important;left:auto!important;bottom:auto!important;transform:none!important;margin:0 auto!important;box-shadow:none!important;width:var(--page-w)!important;height:var(--page-h)!important;break-inside:avoid!important;}
+ }
+ @media print and (min-width:1px){ html,body{width:100%!important;max-width:100%!important;} }
 
 </style>
 </head>
@@ -310,7 +380,21 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
   </aside>
   <section class="preview-pane" aria-label="معاينة صفحة التقرير">
     <div class="preview-toolbar"><div class="preview-toolbar-copy"><strong>المعاينة المباشرة · التقرير الشهري</strong><small id="previewState">بانتظار رفع الملف</small></div>
-      <div class="preview-tools"><label for="zoomSelect">التكبير</label><select class="preview-select" id="zoomSelect"><option value="fit">ملائم للنافذة</option><option value="1">100%</option><option value="0.85">85%</option><option value="0.7">70%</option><option value="0.5">50%</option></select><b id="zoomLabel">—</b></div>
+      <div class="preview-tools">
+        <label for="zoomSelect">التكبير</label><select class="preview-select" id="zoomSelect"><option value="fit">ملائم للنافذة</option><option value="1">100%</option><option value="0.85">85%</option><option value="0.7">70%</option><option value="0.5">50%</option></select><b id="zoomLabel">—</b>
+        <span class="tools-divider" aria-hidden="true"></span>
+        <label for="orientationSelect">اتجاه الورقة</label>
+        <select class="preview-select" id="orientationSelect">
+          <option value="landscape">عرض (A4 أفقي)</option>
+          <option value="portrait">طول (A4 رأسي)</option>
+        </select>
+        <label for="headerColorSelect">لون الهيدر</label>
+        <select class="preview-select" id="headerColorSelect" title="لون خلفية هيدر صفحة A4">
+          <option value="green">أخضر داكن</option>
+          <option value="gold">ذهبي</option>
+        </select>
+        <label class="center-check" for="centerToggle"><input type="checkbox" id="centerToggle" checked><span>توسيط الورقة</span></label>
+      </div>
     </div>
     <div class="preview-scroll" id="previewScroll">
        <div class="empty-preview" id="emptyPreview"><div class="empty-page-icon" aria-hidden="true"><span class="blank-line"></span><span class="blank-line short"></span><span class="blank-line"></span></div><h2>تقريرك سيظهر هنا</h2><p>بعد رفع ملف خطة العمل، ستُحدَّث جميع عناصر القالب تلقائياً وتظهر نتيجة بياناتك في هذه المساحة.</p><span class="empty-chip">صفحة A4 أفقية جاهزة للطباعة</span></div>
@@ -318,9 +402,10 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
 <main aria-label="التقرير النهائي الشهري لخطة العمل لشهر آب 2026" class="page">
 <header class="header">
 <div class="head-main">
-<div aria-label="العلامة البصرية في القالب الأصلي" class="mark"><span></span><span></span><span></span><span></span></div>
+<img alt="شعار الجمهورية العربية السورية" class="emblem" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjYzNy45OCIKICAgaGVpZ2h0PSI0NzguNzQiCiAgIHZpZXdCb3g9IjAgMCAyMTIuNjYgMTU5LjU4IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmczIgogICBzb2RpcG9kaTpkb2NuYW1lPSJFbWJsZW1fb2ZfU3lyaWFfKDIwMjXigJNwcmVzZW50KSAoNCkuc3ZnIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjQuMiAoZWJmMGU5NCwgMjAyNS0wNS0wOCkiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnMKICAgICBpZD0iZGVmczMiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXczIgogICAgIHBhZ2Vjb2xvcj0iI2ZmZmZmZiIKICAgICBib3JkZXJjb2xvcj0iIzAwMDAwMCIKICAgICBib3JkZXJvcGFjaXR5PSIwLjI1IgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZWNoZWNrZXJib2FyZD0iMCIKICAgICBpbmtzY2FwZTpkZXNrY29sb3I9IiNkMWQxZDEiCiAgICAgaW5rc2NhcGU6em9vbT0iMC44NzIwODA5IgogICAgIGlua3NjYXBlOmN4PSIyNzIuOTEwNDYiCiAgICAgaW5rc2NhcGU6Y3k9IjIwOS4yNjk1OCIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTA5NCIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iLTExIgogICAgIGlua3NjYXBlOndpbmRvdy15PSItMTEiCiAgICAgaW5rc2NhcGU6d2luZG93LW1heGltaXplZD0iMSIKICAgICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJzdmczIiAvPgogIDxwYXRoCiAgICAgZmlsbD0iI2I5YTc3YSIKICAgICBkPSJtIDE3NC43NSw2NC43NiBjIC0wLjUxLDAuNDkgLTEuMDMsMC45NyAtMS41NiwxLjQzIGwgMjQuOTcsMzcuMjYgLTkuNDksLTEuMjcgYyAtMy4wNywtMC40MSAtNS43OCwtMi4yMyAtNy4zMiwtNC45MiBsIC0xNC45LC0yNS45OSBjIC0wLjU5LDAuMzggLTEuMTksMC43NSAtMS44LDEuMSBsIDIzLjg5LDQzLjQ0IC05LjUsLTEuOTEgYyAtMy4xMSwtMC42MyAtNS43NCwtMi43IC03LjA3LC01LjU4IEwgMTU3LjA3LDc2LjEgYyAtMC42NSwwLjI3IC0xLjMxLDAuNTIgLTEuOTgsMC43NiBsIDE1LjYyLDM1LjM1IC03LjI1LC0xLjQ2IGMgLTMuNDEsLTAuNjkgLTYuMjIsLTMuMTEgLTcuNCwtNi4zOCBsIC05LjEsLTI1LjI2IGMgLTAuNjksMC4xNCAtMS4zOSwwLjI2IC0yLjA4LDAuMzcgbCAxMC4wNywyOS41NyAtNS40MiwtMS4wOSBjIC0zLjcyLC0wLjc1IC02LjY4LC0zLjU1IC03LjY1LC03LjIxIGwgLTUuMTksLTE5LjYxIHYgMCBjIC0wLjY3LDAuMTggLTEuMzMsMC4zOCAtMS45OCwwLjYgbCA2LjAxLDI0LjQ1IC0zLjg4LC0wLjc4IEMgMTMyLjgxLDEwNC42IDEyOS43LDEwMS40IDEyOSw5Ny4zNSBsIC0yLjE1LC0xMi40MyAtMy43MSw4LjYgYyAtMC40MSwwLjk2IC0wLjMxLDIuMDYgMC4yNiwyLjkzIGwgMTEuNDQsMTcuMjMgYyAwLjE2LDAuMjQgMC4yNSwwLjUxIDAuMjcsMC44IGwgMC4yMiwzLjI2IDcuMjEsNy4yMSBoIDE2Ljk1IHYgNy40IGwgLTMuNjEsLTMuNjEgaCAtMy45OCBsIDMuNzgsMy43OCAtNC4xMiw0LjEyIHYgLTQuMTIgbCAtMy43OSwtMy43OCBoIC0zLjY0IGwgLTMuNzksMy43OCB2IDMuMjYgbCAtNC40LC00LjQxIDMuODIsLTMuNzIgLTYuNzMsLTYuNzMgLTIuNDIsMC4yNyBjIC0wLjM4LDAuMDQgLTAuNzcsLTAuMDUgLTEuMDksLTAuMjYgbCAtMTQuMTUsLTkuNCAxMC4xNywxMy43MyAxNi4xOSwyMS44NyBoIC02LjgzIGMgLTMuODcsMCAtNy4zOSwtMi4yNSAtOS4wMiwtNS43NiBsIC01Ljk0LC0xMi43NyBjIC0wLjU2LDAuMjYgLTEuMTMsMC41MSAtMS43LDAuNzMgbCA5LjUzLDI0LjAyIGggLTMuMjkgYyAtNC44MSwwIC04LjkzLC0zLjQ0IC05Ljc5LC04LjE3IGwgLTIuNTcsLTE0LjEgYyAtMC41NiwwLjEgLTEuMTIsMC4xOSAtMS43LDAuMjYgbCAyLjE1LDE2Ljg0IGMgMC40MSwzLjI0IC0wLjc5LDYuNDcgLTMuMjEsOC42NiBsIC0zLjA0LDIuNzQgLTMuMDQsLTIuNzQgYyAtMi40MiwtMi4xOCAtMy42MiwtNS40MiAtMy4yMSwtOC42NSBsIDIuMTUsLTE2Ljg0IGMgLTAuNTcsLTAuMDcgLTEuMTMsLTAuMTYgLTEuNywtMC4yNiBsIC0yLjU3LDE0LjEgYyAtMC44Niw0LjczIC00Ljk4LDguMTcgLTkuNzksOC4xNyBoIC0zLjI5IGwgOS41MywtMjQuMDIgYyAtMC41NywtMC4yMiAtMS4xNCwtMC40NyAtMS43LC0wLjczIGwgLTUuOTQsMTIuNzcgYyAtMS42MywzLjUxIC01LjE1LDUuNzYgLTkuMDIsNS43NiBoIC02LjgzIGwgMTYuMTksLTIxLjg3IDEwLjE3LC0xMy43MyAtMTQuMTUsOS40IGMgLTAuMzIsMC4yMSAtMC43MSwwLjMxIC0xLjA5LDAuMjYgbCAtMi40MiwtMC4yNyAtNi43Myw2LjczIDMuODIsMy43MiAtNC40LDQuNDEgdiAtMy4yNiBsIC0zLjc5LC0zLjc4IGggLTMuNjQgbCAtMy43OSwzLjc4IHYgNC4xMiBsIC00LjEyLC00LjEyIDMuNzgsLTMuNzggaCAtMy45OCBsIC0zLjYxLDMuNjEgdiAtNy40IEggNzAuMSBsIDcuMjEsLTcuMjEgMC4yMywtMy4yNiBjIDAuMDIsLTAuMjggMC4xMSwtMC41NiAwLjI3LC0wLjc5IEwgODkuMjUsOTYuNDcgYyAwLjU4LC0wLjg3IDAuNjgsLTEuOTcgMC4yNiwtMi45MyBMIDg1LjgsODQuOTMgdiAwIGwgLTIuMTUsMTIuNDMgYyAtMC43LDQuMDUgLTMuODIsNy4yNSAtNy44NSw4LjA2IGwgLTMuODcsMC43OCA2LjAxLC0yNC40NiBjIC0wLjY1LC0wLjIyIC0xLjMyLC0wLjQxIC0xLjk5LC0wLjYgbCAtNS4xOCwxOS42MiBjIC0wLjk3LDMuNjcgLTMuOTQsNi40NyAtNy42Niw3LjIxIGwgLTUuNDIsMS4wOSAxMC4wOCwtMjkuNTcgYyAtMC43LC0wLjEgLTEuMzksLTAuMjMgLTIuMDgsLTAuMzYgbCAtOS4xLDI1LjI3IGMgLTEuMTgsMy4yOCAtMy45OSw1LjcgLTcuNCw2LjM4IGwgLTcuMjUsMS40NiAxNS42MSwtMzUuMzcgYyAtMC42NywtMC4yMyAtMS4zMiwtMC40OSAtMS45NywtMC43NSBsIC0xNC45LDMyLjIxIGMgLTEuMzMsMi44OCAtMy45Niw0Ljk1IC03LjA3LDUuNTggTCAyNC4xLDExNS44MiA0OC4wMSw3Mi4zOCBDIDQ3LjQsNzIuMDMgNDYuOCw3MS42NiA0Ni4yMSw3MS4yNyBsIC0xNC45LDI2IGMgLTEuNTQsMi42OSAtNC4yNSw0LjUxIC03LjMyLDQuOTIgTCAxNC41LDEwMy40NiAzOS40Nyw2Ni4xOSBDIDM4Ljk0LDY1LjczIDM4LjQyLDY1LjI1IDM3LjksNjQuNzYgTCAyMy44NCw4NC45NyBjIC0xLjczLDIuNDkgLTQuNDksNC4wNSAtNy41Miw0LjI1IEwgNi45OSw4OS44NCAzMi4yMSw1OC41IEMgMzEuNzcsNTcuOTUgMzEuMzUsNTcuMzggMzAuOTMsNTYuOCBMIDE2Ljk0LDczLjU4IGMgLTEuODksMi4yNyAtNC42OSwzLjU4IC03LjY0LDMuNTggSCAwIEwgNDQuNywzMC41OCBjIDIuNDEsLTIuNTEgNS43MywtMy45MyA5LjIxLC0zLjkzIGggOS45NyBjIDIuNjcsMCA0LjgzLDIuMTYgNC44Myw0LjgzIHYgNS42MyBjIDAsNC41NCAxLjUyLDguNzIgNC4wNiwxMi4wNyAzLjY0LDQuOCA5LjQxLDcuOSAxNS45MSw3LjkgMS40NCwwIDIuODUsLTAuMTYgNC4yMSwtMC40NSAxLjA4LC0wLjIzIDEuOTYsLTEuMDMgMi4yNSwtMi4xIGwgMy41NCwtMTIuODEgYyAwLjA1LC0wLjIzIDAuMDYsLTAuNDcgMC4wMiwtMC43IC0wLjI0LC0xLjU1IC0yLjM0LC0yLjUyIC00LjcsLTIuMTYgLTEuODksMC4yOCAtMy41OTU5OTQsMS4xODc5NyAtNC4wMzY2NzEsMi41NCAwLDAgLTAuNzYzMzI5LC0yLjA0IC0wLjc4MzMyOSwtMy41NiAtMC4wMywtMS45NiAwLjgxLC0zLjA1IDIuNzEsLTQuMDEgbCAzLjMsLTEuNTUgYyAyLjA4LC0xLjkxIDUuNDYsLTMuMTQgOS4zLC0zLjE0IDUuOSwwIDEwLjc2LDIuOTMgMTEuMzgsNi43MiBsIDAuMDYsMC40NiAyLjM5LDE3Ljk4IGMgMC4xNywxLjI4IDEuMTYsMi4zMSAyLjQ0LDIuNTIgMS4wNSwwLjE3IDIuMTIsMC4yNiAzLjIyLDAuMjYgNi40OSwwIDEyLjI2LC0zLjA5IDE1LjkxLC03LjkgMi41NSwtMy4zNSA0LjA2LC03LjUzIDQuMDYsLTEyLjA3IHYgLTUuNjMgYyAwLC0yLjY3IDIuMTYsLTQuODMgNC44MywtNC44MyBoIDkuOTcgYyAzLjQ4LDAgNi44LDEuNDIgOS4yMSwzLjkzIGwgNDQuNyw0Ni41OCBoIC05LjI4IGMgLTIuOTUsMCAtNS43NSwtMS4zMSAtNy42NCwtMy41OCBsIC0xNCwtMTYuNzggYyAtMC40MSwwLjU3IC0wLjgzLDEuMTQgLTEuMjcsMS43IGwgMjUuMjEsMzEuMzQgLTkuMzQsLTAuNjIgYyAtMy4wMiwtMC4yIC01Ljc5LC0xLjc2IC03LjUyLC00LjI1IEwgMTc0Ljc2LDY0Ljc2IFoiCiAgICAgaWQ9InBhdGgxIgogICAgIHN0eWxlPSJmaWxsOiNiOGE1N2I7ZmlsbC1vcGFjaXR5OjEiCiAgICAgc29kaXBvZGk6bm9kZXR5cGVzPSJjY2NjY2NjY2NjY2NjY2NjY2NjY2NzY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2Njc2NjY2NzY2NjY2NjY2NjY2NzY2NjY3NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2Njc2Njc3Nzc2NzY2NjY2NjY2Njc2NjY2NzY3Nzc3NjY3NjY2NjY2NjYyIgLz4KICA8cG9seWdvbgogICAgIGZpbGw9IiNiOWE3N2EiCiAgICAgcG9pbnRzPSIxMDAuNDEgMTguMiAxMDYuMzIgMTMuOSAxMTIuMjMgMTguMiAxMDkuOTcgMTEuMjUgMTE1Ljg4IDYuOTUgMTA4LjU4IDYuOTUgMTA2LjMyIDAgMTA0LjA2IDYuOTUgOTYuNzYgNi45NSAxMDIuNjcgMTEuMjUgMTAwLjQxIDE4LjIiCiAgICAgaWQ9InBvbHlnb24xIgogICAgIHN0eWxlPSJmaWxsOiNiOGE1N2I7ZmlsbC1vcGFjaXR5OjEiIC8+CiAgPHBvbHlnb24KICAgICBmaWxsPSIjYjlhNzdhIgogICAgIHBvaW50cz0iMTI5Ljk0IDE4LjM4IDEzMy43MiAyNC42MyAxMzQuMzMgMTcuMzQgMTQxLjQ0IDE1LjY3IDEzNC43MSAxMi44NCAxMzUuMzIgNS41NiAxMzAuNTUgMTEuMDkgMTIzLjgxIDguMjYgMTI3LjYgMTQuNTIgMTIyLjgyIDIwLjA1IDEyOS45NCAxOC4zOCIKICAgICBpZD0icG9seWdvbjIiCiAgICAgc3R5bGU9ImZpbGw6I2I4YTU3YjtmaWxsLW9wYWNpdHk6MSIgLz4KICA8cG9seWdvbgogICAgIGZpbGw9IiNiOWE3N2EiCiAgICAgcG9pbnRzPSI3OC4zMSAxNy4zNSA3OC44NSAyNC42NCA4Mi43IDE4LjQzIDg5Ljc5IDIwLjE3IDg1LjA3IDE0LjU5IDg4LjkxIDguMzggODIuMTYgMTEuMTQgNzcuNDQgNS41NiA3Ny45OCAxMi44NCA3MS4yMSAxNS42MSA3OC4zMSAxNy4zNSIKICAgICBpZD0icG9seWdvbjMiCiAgICAgc3R5bGU9ImZpbGw6I2I4YTU3YjtmaWxsLW9wYWNpdHk6MSIgLz4KPC9zdmc+Cg==">
+<span aria-hidden="true" class="head-divider"></span>
 <div>
-<div class="eyebrow">إدارة التدريب العسكري <span class="slash">/</span> فرع الرقابة والتفتيش</div>
+<div class="eyebrow">إدارة التدريب العسكري <span class="slash">/</span> مكتب البيانات و مؤشرات الأداء</div>
 <h1>التقرير النهائي الشهري لخطة العمل</h1>
 <div class="head-sub"></div>
 </div>
@@ -398,7 +483,7 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
 </div>
 </article>
 </section>
-<footer class="footer"><div><b>ملاحظة منهجية: </b></div><div class="footer-left"></div></footer>
+<footer class="footer"><div><b>ملاحظة منهجية: </b></div></footer>
 </main>
        </div>
     </div>
@@ -415,6 +500,36 @@ body{overflow:hidden;background:var(--ui-canvas);color:var(--ui-navy);}
   يقرأ القيم المحفوظة للصيغ (cached values)؛ لا يعيد حساب أوراق أخرى.
 */
 const SHEET_NAME = 'التقرير النهائي الشهري';
+const ORIENT_KEY = 'rpt.orientation';
+const CENTER_KEY = 'rpt.centerPaper';
+const HEADER_KEY = 'rpt.headerColor';
+const safeGet = k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const safeSet = (k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+function applyOrientation(mode,{persist=true}={}){
+ const portrait = mode==='portrait';
+ document.documentElement.classList.toggle('page-portrait',portrait);
+ document.body.classList.toggle('page-portrait',portrait);
+ document.documentElement.setAttribute('data-orientation',portrait?'portrait':'landscape');
+ const w = portrait ? '210mm' : '297mm', h = portrait ? '297mm' : '210mm';
+ // قاعدة طباعة صريحة تتغلّب على قالب CSS الأصلي عند تغيير الاتجاه
+ let rule=S('#pageSizeRule');
+ if(!rule){rule=document.createElement('style');rule.id='pageSizeRule';document.head.appendChild(rule);}
+ rule.textContent='@page{size:'+w+' '+h+';margin:0}';
+ const chip=document.querySelector('.empty-chip');
+ if(chip)chip.textContent = portrait ? 'صفحة A4 طولية جاهزة للطباعة' : 'صفحة A4 أفقية جاهزة للطباعة';
+ if(persist)safeSet(ORIENT_KEY,portrait?'portrait':'landscape');
+}
+function applyCentering(on,{persist=true}={}){
+ const viewer=el('previewScroll');if(!viewer)return;
+ viewer.classList.toggle('is-centered',!!on);
+ viewer.classList.toggle('is-left',!on);
+ if(persist)safeSet(CENTER_KEY,on?'1':'0');
+}
+function applyHeaderColor(mode,{persist=true}={}){
+ const gold=mode==='gold';
+ document.body.classList.toggle('header-gold',gold);
+ if(persist)safeSet(HEADER_KEY,gold?'gold':'green');
+}
 const S = (selector,root=document)=>root.querySelector(selector);
 const SA = (selector,root=document)=>Array.from(root.querySelectorAll(selector));
 const el = id=>document.getElementById(id);
@@ -485,7 +600,8 @@ function parseReportCells(cells,use1904,filename){
  const priorities=Array.from({length:5},(_,i)=>{const r=17+i;return {label:String(c('D'+r,'—')),count:num(c('E'+r)),sourcePercent:num(c('F'+r)),className:String(c('H'+r,'—'))};});
  const statuses=Array.from({length:5},(_,i)=>{const r=17+i;return {label:String(c('J'+r,'—')),count:num(c('K'+r)),sourcePercent:num(c('L'+r)),action:String(c('O'+r,'—'))};});
  const sources=[25,26,27].map(r=>({label:String(c('D'+r)),total:num(c('E'+r)),done:num(c('F'+r)),sourcePercent:num(c('G'+r))}));
- const departments=Array.from({length:8},(_,i)=>{const r=25+i;return {name:String(c('J'+r,'')).trim(),total:num(c('K'+r)),done:num(c('L'+r)),pending:num(c('M'+r)),sourcePercent:num(c('N'+r)),delayPercent:num(c('O'+r))};}).filter(d=>d.name);
+ // يُقرأ جدول الجهات من J25 حتى J36 (12 صفاً) لالتقاط أي جهات إضافية خارج الصفوف الثمانية الأساسية.
+ const departments=Array.from({length:12},(_,i)=>{const r=25+i;return {name:String(c('J'+r,'')).trim(),total:num(c('K'+r)),done:num(c('L'+r)),pending:num(c('M'+r)),sourcePercent:num(c('N'+r)),delayPercent:num(c('O'+r))};}).filter(d=>d.name);
  const model={filename,sheet:SHEET_NAME,reportName,organization:org,monthAr,date:excelDate(c('N8'),use1904),
      planned,emergency,total,overallPct:num(c('H11')),plannedPct:num(c('J11')),unfinished:num(c('K11')),
      hidden:num(c('M11')),departmentCount:num(c('O11')),
@@ -527,17 +643,28 @@ let activeModel=null;
 function sum(items,key){return items.reduce((acc,item)=>acc+num(item[key]),0);}
 function validate(m){
  const w=[];
+ const deptSum=sum(m.departments,'total');
+ const doneSum=sum(m.departments,'done');
+ const pendSum=sum(m.departments,'pending');
+ const statusSum=sum(m.statuses,'count');
  if(Math.abs(m.planned+m.emergency-m.total)>.05)w.push('إجمالي المهام (F11) لا يساوي مجموع المهام المخططة والطارئة (D11 + E11).');
- if(Math.abs(sum(m.statuses,'count')-m.planned)>.05)w.push('مجموع حالات التنفيذ (K17:K21) مختلف عن عدد المهام المخططة (D11).');
+ if(Math.abs(statusSum-m.planned)>.05)w.push('مجموع حالات التنفيذ (K17:K21) مختلف عن عدد المهام المخططة (D11).');
  if(Math.abs(sum(m.priorities,'count')-m.planned)>.05)w.push('مجموع الأولويات (E17:E21) مختلف عن عدد المهام المخططة (D11).');
- if(Math.abs(sum(m.departments,'total')-m.planned)>.05)w.push('إجمالي المهام حسب الجهة (K25:K32) مختلف عن عدد المهام المخططة (D11).');
- if(Math.abs(sum(m.departments,'done')-m.statuses[0].count)>.05)w.push('المهام المنجزة حسب الجهة مختلفة عن ملخص حالات التنفيذ.');
- if(Math.abs(sum(m.departments,'pending')-m.unfinished)>.05)w.push('مجموع غير المكتملة حسب الجهة مختلف عن الخلية K11.');
+ // ===== فحوصات حرجة: جهات مفقودة أو مكررة في جدول التنفيذ =====
+ const gap=deptSum-m.planned;
+ if(Math.abs(gap)>.05&&m.departments.length){
+   const sign=gap>0?'أكبر من':'أقل من';
+   w.push('⚠ حرج: مجموع «الإجمالي» في جدول الجهات ('+int(deptSum)+') '+sign+' عدد المهام المخططة (D11 = '+int(m.planned)+') بفارق '+int(Math.abs(gap))+' مهمة. غالباً توجد جهة غير مضافة في الجدول أو صف يُحتسب مرتين — راجع صيغ COUNTIF في خلايا K25:K36 وتأكد أنها تقرأ عمود «الفرع/القسم» (B) وليس المسمى الوظيفي (C).');
+ }
+ if(m.departments.length && m.departmentCount!==m.departments.length){
+   w.push('عدد الجهات (O11 = '+int(m.departmentCount)+') لا يطابق صفوف الجهات المقروءة ('+m.departments.length+'). تحقق من أن كل جهة في ورقة الخطة لها صف في جدول التقرير.');
+ }
+ if(Math.abs(doneSum-m.statuses[0].count)>.05)w.push('المهام المنجزة حسب الجهة ('+int(doneSum)+') مختلفة عن ملخص حالات التنفيذ ('+int(m.statuses[0].count)+').');
+ if(Math.abs(pendSum-m.unfinished)>.05)w.push('مجموع غير المكتملة حسب الجهة ('+int(pendSum)+') مختلف عن الخلية K11 ('+int(m.unfinished)+').');
  if(m.sources[0] && Math.abs(m.sources[0].done-m.statuses[0].count)>.05)w.push('منجز المهام المخططة حسب المصدر مختلف عن حالات التنفيذ.');
  if(m.sources[2] && Math.abs(m.sources[2].done-m.sources[0].done-m.sources[1].done)>.05)w.push('منجز المهام العام لا يساوي مجموع المنجز المخطط والطارئ.');
  if(m.total && Math.abs(ratio(m.sources[2].done,m.total)-m.overallPct)>.005)w.push('نسبة الإنجاز العام في H11 لا تطابق المنجز ÷ الإجمالي في جدول المصدر.');
  if(m.planned && Math.abs(ratio(m.statuses[0].count,m.planned)-m.plannedPct)>.005)w.push('نسبة المخطط في J11 لا تطابق حالة المنجزة بالكامل في K17.');
- if(m.departmentCount!==m.departments.length)w.push('عدد الجهات O11 لا يساوي صفوف الجهات المقروءة؛ تأكد من أن بنية الورقة لم تتغير.');
  if(m.statuses[4]?.count>0)w.push('توجد مهام غير مصنفة؛ تمت إضافتها تلقائياً إلى مخطط الحالات ووسيلة الإيضاح.');
  return w;
 }
@@ -559,7 +686,16 @@ function renderSource(m){
  textNode('#srcExcelSummary',m.rawSummary||'لم تتضمن الخلية D38 نصاً محفوظاً. افتح الملف في Excel، حدّث الحسابات واحفظه.');
  const checks=el('checks');checks.replaceChildren();
  const warnings=validate(m);
- if(warnings.length){const box=document.createElement('div');box.className='src-warning';appendText(box,'ملاحظات فحص الأرقام:','strong');for(const w of warnings)appendText(box,'• '+w+'\n','div');checks.appendChild(box);}
+ if(warnings.length){
+   const box=document.createElement('div');box.className='src-warning';
+   appendText(box,'ملاحظات فحص الأرقام:','strong');
+   for(const w of warnings){
+     const row=appendText(box,'','div');
+     if(w.startsWith('⚠')){box.classList.add('critical');appendText(row,w,'b');}
+     else row.textContent='• '+w;
+   }
+   checks.appendChild(box);
+ }
  return warnings;
 }
 function drawRing(model){
@@ -583,7 +719,8 @@ function drawRing(model){
 function renderPrint(m){
  document.title=m.reportName+' — '+m.monthAr+' | A4';
  textNode('.head-main h1',m.reportName);
- const split=m.organization.split(/\s+[-–]\s+/);
+ const orgLabel=m.organization.replace(/فرع الرقابة والتفتيش/g,'مكتب البيانات و مؤشرات الأداء');
+ const split=orgLabel.split(/\s+[-–]\s+/);
  const eyebrow=S('.eyebrow');eyebrow.replaceChildren();
  if(split.length>=2){appendText(eyebrow,split[0]);appendText(eyebrow,' / ','span','slash');appendText(eyebrow,split.slice(1).join(' - '));}
  else eyebrow.textContent=m.organization;
@@ -603,6 +740,15 @@ function renderPrint(m){
  S('.departments .panel-sub b').textContent=int(m.planned)+' مهمة مخططة';
  const deptTable=S('.dept-table');SA('.dept-row',deptTable).forEach(row=>row.remove());
  const deptHeader=S('.dept-header',deptTable);
+ // عند تجاوز عدد الجهات ثمانية تُضبط ارتفاعات الصفوف تلقائياً كي لا يتجاوز الجدول حدود الصفحة.
+ const nRows=m.departments.length;
+ if(nRows>8){
+   const hL=Math.min(7.05,64.8/nRows),hP=Math.min(9.4,81.5/nRows);
+   deptTable.style.setProperty('--dept-row-h',hL.toFixed(2)+'mm');
+   deptTable.style.setProperty('--dept-row-fs',Math.min(8.1,hL*8.1/7.05).toFixed(2)+'pt');
+   deptTable.style.setProperty('--dept-row-h-p',hP.toFixed(2)+'mm');
+   deptTable.style.setProperty('--dept-row-fs-p',Math.min(8,hP*8/9.4).toFixed(2)+'pt');
+ }else deptTable.removeAttribute('style');
  for(const d of m.departments){
    const row=document.createElement('div');row.className='dept-row';appendText(row,d.name,'div','dept-name');
    appendText(row,int(d.total),'div','numeric');appendText(row,int(d.done),'div','numeric');
@@ -637,14 +783,14 @@ function renderPrint(m){
     appendText(row,pct(ratio(x.count,m.planned)),'div','prio-pct');appendText(row,x.className,'div','prio-note');
     priorityRoot.insertBefore(row,before);
  });
- // تستخرج أبرز ثلاث جهات صاحبة مهام غير مكتملة من الورقة نفسها.
- const top=m.departments.filter(x=>x.pending>0).sort((a,b)=>b.pending-a.pending).slice(0,3);
- const topSum=sum(top,'pending');const summaryPct=ratio(topSum,m.unfinished);
- textNode('.summary-number',m.unfinished?pct(summaryPct):'100%');
+ // تستخرج جميع الجهات صاحبة مهام غير مكتملة؛ الرقم البارز = عدد المهام غير المكتملة لأن القائمة تغطيها كاملة.
+ const top=m.departments.filter(x=>x.pending>0).sort((a,b)=>b.pending-a.pending);
+ textNode('.summary-number',int(m.unfinished));
  const summary=S('.summary-copy');summary.replaceChildren();
  if(m.unfinished){
-   appendText(summary,int(topSum)+' من أصل '+int(m.unfinished)+' مهمة مخططة غير مكتملة','strong');
-   summary.append(' تقع في '+int(top.length)+' جهات: '+top.map(d=>d.name+' ('+int(d.pending)+')').join('، ')+'.');
+   appendText(summary,'مهمة مخططة غير مكتملة من أصل '+int(m.planned),'strong');
+   if(m.planned)summary.append(' ('+pct(ratio(m.unfinished,m.planned))+' من الخطة)');
+   summary.append(' موزعة على '+int(top.length)+' جهات: '+top.map(d=>d.name+' ('+int(d.pending)+')').join('، ')+'.');
  }else{appendText(summary,'لا توجد مهام مخططة غير مكتملة','strong');summary.append(' وفق الأرقام المحفوظة في التقرير.');}
  const met=SA('.insight-metrics .metric b');met[0].textContent=pct(m.operationalDeviation);met[1].textContent=int(m.sources[1]?.done)+'/'+int(m.sources[1]?.total);met[2].textContent=int(m.hidden);
  const foot=SA('.insights-foot>span');
@@ -654,8 +800,6 @@ function renderPrint(m){
  m.statuses.forEach((x,i)=>{if(i===4 && !x.count)return;if(i)appendText(actions,'|','span','action-sep');actions.append(' '+x.action+' ('+int(x.count)+') ');});
  const method=S('.footer>div:first-child');method.replaceChildren();appendText(method,'ملاحظة منهجية: ','b');
  method.append('نسبة الإنجاز العام من جميع المهام ('+int(m.total)+')، فيما نسب الحالة والأولويات والتنفيذ حسب الجهة من المهام المخططة فقط ('+int(m.planned)+').');
- const months={'كانون الثاني':'JAN','شباط':'FEB','آذار':'MAR','نيسان':'APR','أيار':'MAY','حزيران':'JUN','تموز':'JUL','آب':'AUG','أيلول':'SEP','تشرين الأول':'OCT','تشرين الثاني':'NOV','كانون الأول':'DEC'};
- const my=m.monthAr.match(/^(.*?)\s+(\d{4})$/);textNode('.footer-left','MONTHLY PERFORMANCE REPORT  •  '+(my?(months[my[1]]||my[1])+' '+my[2]:m.monthAr)+'  |  01 / 01');
  S('.page').setAttribute('aria-label',m.reportName+'، '+m.monthAr);
 }
 function renderAll(model){
@@ -707,7 +851,9 @@ function fitStage(){
  const allowedW=Math.max(250,viewer.clientWidth-35),allowedH=Math.max(200,viewer.clientHeight-30);
  const scale=mode==='fit'?Math.min(1,allowedW/paper.offsetWidth,allowedH/paper.offsetHeight):Number(mode);
  paper.style.transform='scale('+scale+')';stage.style.width=(paper.offsetWidth*scale)+'px';stage.style.height=(paper.offsetHeight*scale)+'px';
- viewer.style.justifyContent=stage.offsetWidth>viewer.clientWidth?'flex-start':'center';
+ const centered=el('centerToggle').checked;
+ viewer.classList.toggle('is-centered',centered);
+ viewer.classList.toggle('is-left',!centered);
  textNode('#zoomLabel',Math.round(scale*100)+'%');
 }
 function saveHtml(){if(!activeModel.fromExcel)return;
@@ -726,12 +872,24 @@ for(const type of ['dragleave','drop'])drop.addEventListener(type,e=>{e.preventD
 drop.addEventListener('drop',e=>loadFile(e.dataTransfer?.files?.[0]));
 drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el('fileInput').click();}});
 el('zoomSelect').addEventListener('change',fitStage);
+el('orientationSelect').addEventListener('change',e=>{applyOrientation(e.target.value);requestAnimationFrame(fitStage);});
+el('centerToggle').addEventListener('change',()=>{applyCentering(el('centerToggle').checked);fitStage();});
+el('headerColorSelect').addEventListener('change',e=>applyHeaderColor(e.target.value));
 el('resetBtn').addEventListener('click',clearReport);
 el('saveBtn').addEventListener('click',saveHtml);
 el('printBtn').addEventListener('click',()=>{if(activeModel)window.print();});
 window.addEventListener('resize',fitStage);
 if('ResizeObserver' in window){new ResizeObserver(()=>{if(activeModel)fitStage();}).observe(el('previewScroll'));}
 clearReport();
+// استعادة تفضيلات الاتجاه والتوسيط من الجلسة السابقة
+const savedOrient = safeGet(ORIENT_KEY)==='portrait' ? 'portrait' : 'landscape';
+el('orientationSelect').value = savedOrient;
+applyOrientation(savedOrient,{persist:false});
+el('centerToggle').checked = safeGet(CENTER_KEY)!=='0';
+applyCentering(el('centerToggle').checked,{persist:false});
+const savedHeader = safeGet(HEADER_KEY)==='gold' ? 'gold' : 'green';
+el('headerColorSelect').value = savedHeader;
+applyHeaderColor(savedHeader,{persist:false});
 const embedded=el('embeddedReport').textContent.trim();
 if(embedded){try{const saved=JSON.parse(embedded);if(saved?.sheet===SHEET_NAME && saved.fromExcel)renderAll(saved);else setStatus('البيانات المحفوظة لا تطابق ورقة التقرير المطلوبة.','warn');}
  catch(e){setStatus('تعذر قراءة البيانات المحفوظة؛ ارفع ملف Excel مجدداً.','warn');}}
